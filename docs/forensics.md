@@ -197,3 +197,31 @@ If you see files with the extension `.docm`, there is a good chance there is som
 ```sh
 olevba the_file.docm
 ```
+
+## Memory Dumps
+
+### Volatility
+
+Volatility is a tool for analyzing RAM dumps from a variety of operating systems. Below are some useful snippets:
+```sh
+# get basic info for a dump, including recommended profiles
+volatility -f ./image.raw imageinfo
+
+# view processes; see also pslist and psscan
+volatility -f ./image.raw --profile=Win7SP0x64 pstree
+
+# dump the memory of a specific process
+volatility -f ./image.raw --profile=Win7SP0x64 memdump -p <PID> -D dump/
+
+# view commands run in the command prompt
+volatility -f ./image.raw --profile=Win7SP0x64 connections
+
+# view network connections; use `consoles` to also get command prompt output
+volatility -f ./image.raw --profile=Win7SP0x64 cmdscan
+
+# view environment variables
+volatility -f ./image.raw --profile=Win7SP0x64 envars
+
+# view internet explorer history
+volatility -f ./image.raw --profile=Win7SP0x64 iehistory
+```
