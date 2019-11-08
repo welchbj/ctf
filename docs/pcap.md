@@ -60,11 +60,16 @@ Sometimes you do not need to do much work to find a flag, and can take some shor
 Occasionally, a PCAP challenge is only meant to involve pulling out a transferred file (via a protocol like HTTP or SMB) from the PCAP and doing some further analysis on that file. Files transferred via HTTP can be extracted from a PCAP in Wireshark via the `File -> Export Objects -> HTTP` option. The same can be done for SMB-transferred files via the `File -> Export Objects -> SMB` option. Note that this technique is not a 100% surefire method of extracting every file, as some files may have been transferred in non-standard ways that Wireshark is not innately privy to.
 
 We can also just try searching different raw traffic for flag-related text. For example, we can search for the string `flag` in all TCP traffic with the following filter:
-```sh
+```
 frame contains flag
 ```
 
 It's also probably worthwhile to search for the start of the known flag format in its ASCII- and base64-encoded forms, too.
+
+Sometimes, there might be extra information stored via Wireshark's commenting feature. To filter on packets that have comments, use the filter:
+```
+pkt_comment
+```
 
 ### Decrypting SSL/TLS traffic
 
