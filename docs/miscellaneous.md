@@ -58,7 +58,7 @@ Some challenges will introduce bad character restrictions for macro/syntax-relat
 | `??'`              | `^`         |
 | `??(`              | `[`         |
 | `??)`              | `]`         |
-| `??!`              | `|`         |
+| `??!`              | `\|`        |
 | `??<`              | `{`         |
 | `??>`              | `}`         |
 | `??-`              | `~`         |
@@ -70,12 +70,12 @@ Additionally, the [C alternative tokens](https://en.wikipedia.org/wiki/C_alterna
 | `and`    | `&&`          |
 | `and_eq` | `&=`          |
 | `bitand` | `&`           |
-| `bitor`  | `|`           |
+| `bitor`  | `\|`          |
 | `compl`  | `~`           |
 | `not`    | `!`           |
 | `not_eq` | `!=`          |
-| `or`     | `||`          |
-| `or_eq`  | `|=`          |
+| `or`     | `\|\|`        |
+| `or_eq`  | `\|=`         |
 | `xor`    | `^`           |
 | `xor_eq` | `^=`          |
 
