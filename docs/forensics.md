@@ -1,6 +1,6 @@
 # Forensics
 
-Forensics is an interesting category of CTF problems and requires knowing how data can be hidden creatively in existing file formats.
+Forensics is an interesting category of CTF problems and requires knowing how data can be left behind on backups, logs, or other artifacts.
 
 ## Windows Analysis
 
@@ -183,19 +183,6 @@ Get-WinEvent -FilterHashTable @{LogName='Security';Id=686,4782,5379,5381,5382} |
 If you come across a base64-encoded PowerShell payload (think `[Convert]::FromBase64String`), you can decode it with:
 ```sh
 echo -n <BASE64 BLOB> | base64 -d | iconv -f UTF-16LE -t ASCII
-```
-
-## Office Documents
-
-### `oletools`
-
-Some challenges may involve extracting information from various Microsoft Office files. A good suite of tools for working with these documents is  [`python-oletools`](https://github.com/decalage2/oletools/wiki). See below for more detailed examples for a few of the tools in this collection.
-
-#### `olevba`
-
-If you see files with the extension `.docm`, there is a good chance there is some kind of embedded VBA macro inside that is worth taking a look at. `olevba` will dump this information out for you. Its usage is straightforward:
-```sh
-olevba the_file.docm
 ```
 
 ## Memory Dumps
