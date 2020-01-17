@@ -4,22 +4,57 @@ Steganography is the art of abusing file formats and encodings to hide data. It 
 
 ## General Tools
 
-Sometimes, the problem isn't so hard. Just running `strings` or `xxd`
+Sometimes, the problem isn't so hard. Just running `strings` or `xxd` might get you what you need.
 
-The tool `binwalk` is always a great starting point when you are given some kind of binary file. It can detect embedded files within files you give it, and then extract them. It's fairly straightforward to use:
+The tool [`binwalk`](https://tools.kali.org/forensics/binwalk) is always a great starting point when you are given some kind of binary file. It can detect embedded files within files you give it, and then extract them. It's fairly straightforward to use:
 ```sh
-# TODO
-TODO
+# extract files from the provided file
+binwalk -e the_file
+
+# force extraction, even if binwalk doesn't want to
+binwalk --dd '.*' the_file
 ```
-TODO: https://tools.kali.org/forensics/binwalk
+
+An alternative to `binwalk` is [`foremost`](https://github.com/korczis/foremost). Use it in the following way:
+```sh
+foremost -i the_file
+```
 
 ## xor-ing data
 
-TODO: xortool
+A great tool for performing XOR analysis is [`xortool`](https://github.com/hellman/xortool). It provides a lot of options, but here are some examples of its use:
+```sh
+# specify an input file to xor with a known key-length of 10 and anticipated
+# most-common-byte of the pt (in this case, 00); the most common byte is likely
+# 00 for binary files and 20 for text files
+xortool -l 10 -c 00 some_xored_binary_file
 
-For implementing xor-ing within a Python script, `pwntools` is a good choice. The library ships with an `xor()` function, which can be used in the following ways:
+# filter outputs based on known plaintext charsets; options for the -t parameter
+# include printable, base32, and base64; using the -b flag also means that we
+# do not know what the most common character in the plaintext should be (-o
+# will limit this bruteforce to printable characters)
+xortool -l 32 -f -t base64 -b some_xored_file
+
+# probe for keylengths longer than the default maximum of 65
+xortool -m 128 some_xored_file
+```
+
+For implementing xor-ing within a Python script, `pwntools` is a good choice. The library ships with a few pieces of xor functionality, which can be used in the following ways:
 ```python
->>> TODO
+# TODO: xor, xor_key, xor_pair examples
+```
+
+## Audio Analysis
+
+### Visualization
+
+An awesome tool for visualizing an audio file is [SonicVisualiser](https://www.sonicvisualiser.org/). Flags are often encoded within the waveforms of audio files.
+
+### WAV Files
+
+The [WavSteg](https://github.com/ragibson/Steganography#wavsteg) tool from the `stego-lsb` suite is a nice starting point for LSB analysis of WAV files. You can invoke as so:
+```sh
+stegolsb wavsteg -r -i the_file.wav -o output.txt -n 2
 ```
 
 ## Image Analysis
@@ -33,7 +68,10 @@ exiftool image.png
 
 If you see some discrepancies between the metadata's reported image dimensions and the size of the image on disk, that's probably worth looking into.
 
-TODO
+If the image has a thumbnail, it's probably worth extracting that and looking at it, too:
+```sh
+exiftool -b ThumbnailImage image.jpg > thumbnail.jpg
+```
 
 ### File Corruption
 
