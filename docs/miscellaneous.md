@@ -2,6 +2,33 @@
 
 Where the other stuff doesn't fit.
 
+## Password Cracking
+
+### John the Ripper
+
+[`john`](https://www.openwall.com/john/) is a program for automating hash bruteforcing.
+
+Sometimes you need to crack a file format not natively understood by `john`. The [jumbo installation of john](https://www.openwall.com/john/) ships with a lot of conversion scripts, but there are some other helpful ones floating around online. These are the ones that I have found the most useful.
+
+* 7z - (`7z2john.py`)[https://github.com/truongkma/ctf-tools/blob/master/John/run/7z2john.py]
+* SSH keys - (`ssh2john.py`)[https://github.com/magnumripper/JohnTheRipper/blob/bleeding-jumbo/run/ssh2john.py]
+
+### Generating Wordlists
+
+The rockyou wordlist (installed by default on Kali) is usually a good starting point. If you need to generated a wordlist from a specific web page, then [`cewl`](https://github.com/digininja/CeWL) is the tool you are looking for.
+
+Specified wordlists can be mutated further using the `--rules` option. `john` has some builtin rules, but you can learn about adding your own [here](https://www.openwall.com/john/doc/RULES.shtml).
+
+## Esoteric Languages
+
+### Brainfuck
+
+The best offline brainfuck interpreter I've found is available [here](https://github.com/fabianishere/brainfuck).
+
+### Shakespeare Programming Language
+
+If you see a lot of Shakespearean text, take a look [here](https://en.wikipedia.org/wiki/Shakespeare_Programming_Language).
+
 ## C/C++ Preprocessor Hacks
 
 A fun class of CTF problems involving C/C++ compiler preprocessor abuse.
