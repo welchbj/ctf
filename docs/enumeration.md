@@ -14,15 +14,15 @@ export HOST=scanme.nmap.org
 /opt/bscan --max-concurrency 5 $HOST
 ```
 
-If you choose not to see the light, these Nmap snippets will prove useful:
+If you choose not to see the light, these Nmap snippets will prove useful (`-sT` used for speed; in real-life scenarios, use TCP SYN scanning with `-sS`):
 ```sh
 export HOST=scanme.nmap.org
 
 # quick TCP port scan on common ports
-nmap -vv -n -Pn -sV -sC --top-ports 1000 -oN $'nmap.tcp.quick.'${HOST}$'.'$(date -Iseconds) $HOST
+nmap -vv -n -Pn -sT -sV -sC --top-ports 1000 -oN $'nmap.tcp.quick.'${HOST}$'.'$(date -Iseconds) $HOST
 
 # thorough and complete TCP port scan on all ports
-nmap -vv -n -Pn -sV -sC -p- -oN $'nmap.tcp.thorough.'${HOST}$'.'$(date -Iseconds) $HOST
+nmap -vv -n -Pn -sT -sV -sC -p- -oN $'nmap.tcp.thorough.'${HOST}$'.'$(date -Iseconds) $HOST
 
 # UDP scan
 nmap -vv -n -Pn -sV -sC -sU -oN $'nmap.udp.'${HOST}$'.'$(date -Iseconds) $HOST
