@@ -207,30 +207,23 @@ TODO
 
 TODO
 
-## `tcpdump`
+## Scapy
 
-`tcpdump` is another command-line program and can do a lot of the same things as `tshark`. It can be useful when listening for live traffic, and I like to use it when sanity-checking callback network connectivity when writing remote exploits.
+[Scapy](https://scapy.readthedocs.io/en/latest/) is a project that lets you read and manipulate network packets in Python.
 
-### General utilities
+### Extracting Data from Packets
 
-`tcpdump` will let you get some diagnostic / informational data about your system's network configuration. To list all network interfaces on the system, use:
-```sh
-tcpdump -D
+It offers more fine-grained control for data manipulation than Wireshark or `tshark`. Here is an example of dumping UDP data from a PCAP:
+```python
+#!/usr/bin/env python
+
+from scapy.all import *
+
+packets = rdpcap('the.pcap')
+
+with open('out.raw', 'wb') as f:
+    for p in packets:
+        if UDP in p:
+            chunk = bytes(p[Raw])
+            f.write(chunk)
 ```
-
-TODO
-
-### Capturing traffic
-
-It's important to note th
-
-You can also read from an existing PCAP file via the `-r` option:
-```sh
-TODO
-```
-
-TODO
-
-### Controlling and formatting output
-
-TODO
