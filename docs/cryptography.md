@@ -1,6 +1,10 @@
 # Cryptography
 
-Cryptography challenges can range pretty widely, but tend to involve some math.
+## General References
+
+Here are some general
+
+* [cryptopals]() - a collection of challenges to teach you about different cryptographic vulnerabilities
 
 ## Substitution Ciphers
 

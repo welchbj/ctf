@@ -1,7 +1,5 @@
 # Steganography
 
-Steganography is the art of abusing file formats and encodings to hide data. It can make for some interesting CTF problems.
-
 ## General Tools
 
 Sometimes, the problem isn't so hard. Just running `strings` or `xxd` might get you what you need.
@@ -44,6 +42,13 @@ For implementing xor-ing within a Python script, `pwntools` is a good choice. Th
 # TODO: xor, xor_key, xor_pair examples
 ```
 
+## Unicode Woes
+
+If you encounter odd strings of unicode characters that you can't view, try pasting it into one of these sites:
+
+* [Cyrillic decoder](https://2cyr.com/decode/)
+* [ftfy](https://ftfy.now.sh/)
+
 ## Audio Analysis
 
 ### Visualization
@@ -59,6 +64,10 @@ stegolsb wavsteg -r -i the_file.wav -o output.txt -n 2
 
 ## Image Analysis
 
+### General Toolkits
+
+The most extensive collection of steganography tools is the [stego-toolkit](https://github.com/DominicBreuker/stego-toolkit) project. It has a lot of [scripts](https://github.com/DominicBreuker/stego-toolkit/tree/d2f7892c8c31addfcc92a42a56b54363a3ae1148/scripts) for orchestrating a lot of other popular stego tools.
+
 ### Metadata
 
 A quick glance at an image file's metadata is a good starting point. `exiftool` is a nice tool for printing out this diagnostic information:
@@ -68,9 +77,9 @@ exiftool image.png
 
 If you see some discrepancies between the metadata's reported image dimensions and the size of the image on disk, that's probably worth looking into.
 
-If the image has a thumbnail, it's probably worth extracting that and looking at it, too:
+If the image has a thumbnail, it's probably worth extracting that and looking at it, too. This can also be nested, as shown below:
 ```sh
-exiftool -b ThumbnailImage image.jpg > thumbnail.jpg
+exiftool -binary -ThumbnailImage image.jpg | exiftool -binary -ThumbnailImage - | exiftool -binary -ThumbnailImage - > thumbnail.jpg && eog thumbnail.jpg
 ```
 
 ### File Corruption
@@ -103,6 +112,10 @@ TODO
 
 TODO: [Deep dive into PNG spec](https://www.w3.org/TR/PNG-Structure.html)
 TODO: [PNG chunks](http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html)
+
+### LSB Steganography
+
+TODO
 
 ### zsteg
 

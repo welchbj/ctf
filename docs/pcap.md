@@ -1,7 +1,5 @@
 # PCAP Analysis
 
-This page explores some techniques for PCAP analysis and the different tools up to the task.
-
 ## Practice resources
 
 The Wireshark project has assembled a collection of packet captures (PCAPs) for practice and/or testing. I recommend trying out the below tips with some of these PCAPs, which can be found [here](https://wiki.wireshark.org/SampleCaptures). You can also find some additional SMB2 capture files [here](https://wiki.wireshark.org/SMB2#Example_capture_files).

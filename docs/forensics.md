@@ -189,26 +189,28 @@ echo -n <BASE64 BLOB> | base64 -d | iconv -f UTF-16LE -t ASCII
 
 ### Volatility
 
-Volatility is a tool for analyzing RAM dumps from a variety of operating systems. Below are some useful snippets:
+[Volatility](https://github.com/volatilityfoundation/volatility) is a tool for analyzing RAM dumps from a variety of operating systems. Below are some useful snippets:
 ```sh
+export DUMP=./memory.vmem
+
 # get basic info for a dump, including recommended profiles
-volatility -f ./image.raw imageinfo
+/opt/volatility -f $DUMP imageinfo
 
 # view processes; see also pslist and psscan
-volatility -f ./image.raw --profile=Win7SP0x64 pstree
+/opt/volatility -f $DUMP --profile=Win7SP0x64 pstree
 
 # dump the memory of a specific process
-volatility -f ./image.raw --profile=Win7SP0x64 memdump -p <PID> -D dump/
+/opt/volatility -f $DUMP --profile=Win7SP0x64 memdump -p <PID> -D dump/
 
 # view commands run in the command prompt
-volatility -f ./image.raw --profile=Win7SP0x64 connections
+/opt/volatility -f $DUMP --profile=Win7SP0x64 connections
 
 # view network connections; use `consoles` to also get command prompt output
-volatility -f ./image.raw --profile=Win7SP0x64 cmdscan
+/opt/volatility -f $DUMP --profile=Win7SP0x64 cmdscan
 
 # view environment variables
-volatility -f ./image.raw --profile=Win7SP0x64 envars
+/opt/volatility -f $DUMP --profile=Win7SP0x64 envars
 
 # view internet explorer history
-volatility -f ./image.raw --profile=Win7SP0x64 iehistory
+/opt/volatility -f $DUMP --profile=Win7SP0x64 iehistory
 ```
