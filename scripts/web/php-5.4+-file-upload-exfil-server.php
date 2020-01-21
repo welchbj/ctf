@@ -1,4 +1,8 @@
 <?php
+/**
+ * Invoke this with:
+ * php -S localhost:8888 php-5.4+-file-upload-exfil-server.php
+ */
 
 define('FILE_FORM_FIELD', 'f');
 define('MAX_FILE_SIZE', 1000000);
