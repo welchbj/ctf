@@ -20,12 +20,17 @@ print_info = partial(print, '[*] ', sep='')
 print_err = partial(print, '[!] ', sep='', file=sys.stderr)
 
 URL = 'ws://dns.requestbin.net:8080/dnsbin'
+DECOMPRESS_WBITS = dict(
+    deflate=-zlib.MAX_WBITS,
+    zlib=zlib.MAX_WBITS,
+    gzip=zlib.MAX_WBITS | 16
+)
 
 
 def get_parsed_args():
     parser = ArgumentParser(
-        prog='dnsbin_retriever.py',
-        usage='dnsbin_retriever.py [OPTIONS]',
+        prog='dnsbin-retriever.py',
+        usage='dnsbin-retriever.py [OPTIONS]',
         description='retrieve compressed/encoded data sent to dnsbin',
         formatter_class=RawTextHelpFormatter
     )
@@ -55,6 +60,13 @@ def get_parsed_args():
         default=False,
         help='print retrieved payloads to stdout',
     )
+    parser.add_argument(
+        '-d', '--decompress-format',
+        action='store',
+        default='zlib',
+        choices=sorted(DECOMPRESS_WBITS.keys()),
+        help='format to use when decompressing data'
+    )
 
     return parser.parse_args()
 
@@ -68,6 +80,20 @@ def init_ws(token):
     ws = create_connection(URL)
     ws.send(json_message)
     return ws
+
+
+def decompress(data, decompress_format):
+    """Decompress data compressed in the zlib, gzip, or deflate formats.
+
+    See:
+        https://stackoverflow.com/a/22311297
+
+    """
+    wbits = DECOMPRESS_WBITS.get(decompress_format)
+    if wbits is None:
+        raise ValueError('Invalid decompression format!')
+
+    return zlib.decompress(data, wbits)
 
 
 def recover_data(domain_set, opts):
@@ -112,13 +138,14 @@ def recover_data(domain_set, opts):
             print_err(f'Malformed hex-encoded data for session {sess}')
             continue
 
-
         if not opts.no_decompress:
             try:
-                data = zlib.decompress(data)
-            except Exception as e:
-                raise e
-                print_err(f'Malformed zlib-compressed data for session {sess}')
+                data = decompress(data, opts.decompress_format)
+            except:
+                print_err(
+                    f'Malformed zlib-compressed data for session {sess} using '
+                    f'decompression format {opts.decompress_format}'
+                )
                 continue
 
         if opts.print_to_stdout:
