@@ -100,7 +100,7 @@ When outbound rules from a target are restrictive, it may still be possible to e
 
 * [DNSBin](http://dnsbin.zhack.ca)
 
-These concepts are based on [this writeup from Insomnihack Teaser 2020](https://ctftime.org/writeup/17998). I present below a proof-of-concept DNS exfiltration protocol with the composed of the following fields:
+These concepts are based on [this writeup from Insomnihack Teaser 2020](https://ctftime.org/writeup/17998). I present below a proof-of-concept DNS exfiltration protocol with the following fields:
 
 * N-byte 0-indexed sequence number
 * 2-byte session
