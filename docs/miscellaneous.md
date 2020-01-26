@@ -10,8 +10,8 @@ Where the other stuff doesn't fit.
 
 Sometimes you need to crack a file format not natively understood by `john`. The [jumbo installation of john](https://www.openwall.com/john/) ships with a lot of conversion scripts, but there are some other helpful ones floating around online. These are the ones that I have found the most useful.
 
-* 7z - (`7z2john.py`)[https://github.com/truongkma/ctf-tools/blob/master/John/run/7z2john.py]
-* SSH keys - (`ssh2john.py`)[https://github.com/magnumripper/JohnTheRipper/blob/bleeding-jumbo/run/ssh2john.py]
+* 7z - [`7z2john.py`](https://github.com/truongkma/ctf-tools/blob/master/John/run/7z2john.py)
+* SSH keys - [`ssh2john.py`](https://github.com/magnumripper/JohnTheRipper/blob/bleeding-jumbo/run/ssh2john.py)
 
 ### Generating Wordlists
 
