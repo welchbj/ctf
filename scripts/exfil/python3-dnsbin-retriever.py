@@ -29,8 +29,8 @@ DECOMPRESS_WBITS = dict(
 
 def get_parsed_args():
     parser = ArgumentParser(
-        prog='dnsbin_retriever.py',
-        usage='dnsbin_retriever.py [OPTIONS]',
+        prog='dnsbin-retriever.py',
+        usage='dnsbin-retriever.py [OPTIONS]',
         description='retrieve compressed/encoded data sent to dnsbin',
         formatter_class=RawTextHelpFormatter
     )
