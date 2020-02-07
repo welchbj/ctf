@@ -36,6 +36,7 @@ class SolveContext:
     sgn_start: str
     sgn_triples: Set[str]
 
+
 solve_ctx = SolveContext('', '', set())
 
 

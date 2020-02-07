@@ -6,7 +6,6 @@ Encoder does the following to hide a message:
     * change all alpha values of original image to 255-original_ord
 """
 
-import base64
 import sys
 
 from PIL import Image
@@ -30,7 +29,7 @@ for x in range(x_size):
         if a == 255:
             continue
 
-        pt += chr(255-a)
+        pt += chr(255 - a)
         print(pt)
 
 print(pt)
