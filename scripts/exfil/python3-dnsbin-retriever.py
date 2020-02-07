@@ -104,7 +104,7 @@ def recover_data(domain_set, opts):
         try:
             seq_num, sess, data = domain.split('.')
             seq_num = int(seq_num)
-        except:
+        except Exception:
             print_err(f'Received malformed domain {domain}')
             return
 
@@ -134,14 +134,14 @@ def recover_data(domain_set, opts):
         data = ''.join(data_fragments)
         try:
             data = binascii.unhexlify(data)
-        except:
+        except Exception:
             print_err(f'Malformed hex-encoded data for session {sess}')
             continue
 
         if not opts.no_decompress:
             try:
                 data = decompress(data, opts.decompress_format)
-            except:
+            except Exception:
                 print_err(
                     f'Malformed zlib-compressed data for session {sess} using '
                     f'decompression format {opts.decompress_format}'
@@ -151,7 +151,7 @@ def recover_data(domain_set, opts):
         if opts.print_to_stdout:
             try:
                 print(data.decode())
-            except:
+            except Exception:
                 print_err(
                     f'Unable to decode data from session {sess} for writing '
                     'to stdout; was this supposed to be textual?'
@@ -186,9 +186,8 @@ def main():
         ws = init_ws(opts.token)
         domains = restore_session(ws)
         recover_data(domains, opts)
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         print_err('Ctrl-C received; quitting now')
-        return 0
     except Exception as e:
         print_err('Unexpected exception occured; re-raising it')
         raise e

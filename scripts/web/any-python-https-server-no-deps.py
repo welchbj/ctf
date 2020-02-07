@@ -16,12 +16,8 @@ import sys
 from argparse import (
     ArgumentParser,
     RawTextHelpFormatter)
-from datetime import (
-    datetime)
 from functools import (
     partial)
-from io import (
-    BytesIO)
 from http.server import (
     BaseHTTPRequestHandler,
     HTTPServer,
@@ -53,11 +49,11 @@ class CustomRequestHandler(BaseHTTPRequestHandler):
                       self.address_string(),
                       self.path)
         self.log_message(msg)
-    
+
     def version_string(self):
         return 'Apache/2.4.39 (Ubuntu)'
 
-    def do_GET(self):       
+    def do_GET(self):
         content = b''
         content += b'Thanks for GET-ting this server!\n'
         content += b'Nothing more to see here.\n'
@@ -114,7 +110,6 @@ def main():
     except FileNotFoundError:
         print_err('Unable to load certificate file at ', abs_cert_file_path)
         sys.exit(1)
-
 
     print_info('Using certificate at ', abs_cert_file_path)
     print_info('Running HTTPS server on ', opts.addr, ':', opts.port)

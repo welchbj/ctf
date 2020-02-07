@@ -55,9 +55,9 @@ print_err = partial(print, '[!] ', sep='', file=sys.stderr)
 
 
 EncodedFlagFormat = namedtuple(
-        'EncodedFlagFormat', ['encoding', 'value'])
+    'EncodedFlagFormat', ['encoding', 'value'])
 MatchingNeedle = namedtuple(
-        'MatchingNeedle', ['strings_file_path', 'line', 'encoded_flag_format'])
+    'MatchingNeedle', ['strings_file_path', 'line', 'encoded_flag_format'])
 
 
 def bytes_r(b):
@@ -198,7 +198,10 @@ def search_strings_files(opts, needles):
                         if encoded_flag_format.value in line:
                             # more indents is better
                             yield MatchingNeedle(
-                                 strings_path, line, encoded_flag_format)
+                                strings_path,
+                                line,
+                                encoded_flag_format
+                            )
         except UnicodeDecodeError:
             print_err(strings_path)
             continue
