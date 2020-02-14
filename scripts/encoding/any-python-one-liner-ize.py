@@ -39,7 +39,7 @@ def get_parsed_args():
     parser.add_argument(
         'fin',
         action='store',
-        help='path to input file from which to generate strings'
+        help='path to input script to encode into one-liner'
     )
     parser.add_argument(
         '-p', '--python-exe',
