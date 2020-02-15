@@ -87,10 +87,7 @@ curl https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh | ba
 
 ### Process Watching
 
-A lot of information can be gleaned by watching changes to [procfs](https://en.wikipedia.org/wiki/Procfs). An amazing tool for automating this is [`pspy`](https://github.com/DominicBreuker/pspy). Here are some snippets for transferring it to target and executing:
-```sh
-TODO
-```
+A lot of information can be gleaned by watching changes to [procfs](https://en.wikipedia.org/wiki/Procfs). An amazing tool for automating this is [`pspy`](https://github.com/DominicBreuker/pspy).
 
 ## File Exfiltration
 
