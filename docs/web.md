@@ -2,6 +2,26 @@
 
 Web challenges can range a lot. This page aims to cover many common topics for both client and server challenges.
 
+## Tools
+
+### General Tips
+
+Sometimes, a tool has almost everything you need, but you want to slightly modify the HTTP traffic it sends to target. This can be achieved with an HTTP proxy. An awesome guide on telling your tools to use an HTTP proxy can be found [here](https://web.archive.org/web/20200214214020/https://blog.ropnop.com/proxying-cli-tools/).
+
+### Making Requests
+
+For basic requests from the command-line, [curl](https://github.com/curl/curl) is king.
+
+If you need a Python library, synchronous requests are best done with the [`requests`](https://requests.readthedocs.io) package. Asynchronous requests are best done with the [`aiohttp`](https://docs.aiohttp.org) package.
+
+### Interacting with QUIC and HTTP/3
+
+If you see UDP traffic to port 8443, this should be a give away for [QUIC](https://www.chromium.org/quic). The best client libraries and/or tools I've found for interacting with QUIC servers are:
+
+* [Quiche](https://github.com/cloudflare/quiche): A Rust library from CloudFlare. Ships with minimal client/server example programs.
+* [curl](https://curl.haxx.se/): Follow [these instructions](https://github.com/curl/curl/blob/3ea15be3f3d6c77adc9fe22ad0b0208466d622d1/docs/HTTP3.md#quiche-version) for building from source, using Quiche as the underlying HTTP/3 library.
+* [aioquic](https://github.com/aiortc/aioquic): The best option if you require a Python library.
+
 ## Client-side
 
 ### Document Object Model (DOM)
