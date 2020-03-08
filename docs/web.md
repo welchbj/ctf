@@ -132,13 +132,11 @@ These techniques are applicable to frontend injections, as well.
 
 ### Python SSTI Tips
 
-Most Python template injection challenges will involve. A lot of guides will tell you to get a reference to `subprocess.Popen` via `__mro__ -> object -> __subclasses__()`, but I think a much better generic solution is walking up to `builtins['__import__']` via the `__globals__` attribute of any defined method of any instance floating around in memory.
+Most Python template injection challenges will involve trying to walk your way up to process-spawning reference somewhere in memory. A lot of guides will tell you to get a reference to `subprocess.Popen` via `__mro__ -> object -> __subclasses__()`, but I think a much better generic solution is walking up to `builtins['__import__']` via the `__globals__` attribute of any defined method of any object instance floating around in memory.
 
 If seeing command output inline is a must, then aiming for a payload that achieves `__import__('subprocess').check_output('/bin/bash -c "cat fl* /fl* /home/*/fl*"', shell=True)` is a good target.
 
-If `_` is blacklisted, a pretty generic gadget for it is `g.get|string|slice(4)|first|last`.
-
-Anyways, a great overall reference for Flask SSTI can be found [here](https://web.archive.org/web/20200217202837/https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti).
+For Flask/Jinja SSTI problems, if `_` is blacklisted then a pretty generic gadget for it is `g.get|string|slice(4)|first|last`. A great overall reference for Flask/Jinja SSTI can be found [here](https://web.archive.org/web/20200217202837/https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti).
 
 ### Deserialization Attacks
 
