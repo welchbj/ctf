@@ -60,7 +60,25 @@ TODO
 
 ### WebAssembly and Friends
 
-TODO: https://shhnjk.blogspot.com/2019/07/intro-to-chromes-gold-features.html?m=1
+#### Overview
+
+WebAssembly is a binary-format stack-based language. Originally designed to be run in the browser, there are now [a lot of non-browser runtimes](https://github.com/appcypher/awesome-wasm-runtimes).
+
+The best easy-to-consume wasm reference I have found is the [WebAssembly Reference Manual](https://github.com/sunfishcode/wasm-reference-manual/blob/master/WebAssembly.md). If you need the nitty gritty details, try the [official spec](https://webassembly.github.io/spec/core/intro/overview.html).
+
+#### Static Analysis
+
+The [WebAssembly Binary Toolkit](https://github.com/WebAssembly/wabt) is a pretty built out toolkit full of utilities for offline reasoning of WebAssembly code. For a practical application, see [this ctf writeup](http://web.archive.org/web/20200308134223/http://ctfhacker.com/reverse/2018/09/16/flareon-2018-chrome-debugger.html).
+
+#### Dynamic Analysis
+
+Out of all the major browsers, I have found Chrome's WebAssembly debugging experience to be the best.
+
+For more structued analysis, [Wasabi](http://wasabi.software-lab.org/) is the king of WebAssembly tracing in the browser. For a practical application, see [this ctf writeup](https://web.archive.org/web/20190821193041/http://ctfhacker.com/reverse/2018/09/16/flareon-2018-wasabi.html).
+
+#### Portable Native Client (PNaCl)
+
+[Portable Native Client](https://en.wikipedia.org/wiki/Google_Native_Client). Its security implications are explored in [this article](https://web.archive.org/web/20200308133606/https://shhnjk.blogspot.com/2019/07/intro-to-chromes-gold-features.html?m=1).
 
 ### Cookies
 
