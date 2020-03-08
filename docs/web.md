@@ -78,7 +78,7 @@ For more structued analysis, [Wasabi](http://wasabi.software-lab.org/) is the ki
 
 #### Portable Native Client (PNaCl)
 
-[Portable Native Client](https://en.wikipedia.org/wiki/Google_Native_Client). Its security implications are explored in [this article](https://web.archive.org/web/20200308133606/https://shhnjk.blogspot.com/2019/07/intro-to-chromes-gold-features.html?m=1).
+[Portable Native Client](https://en.wikipedia.org/wiki/Google_Native_Client) was an attempt at binary client-side code before WebAssembly. Its security implications are explored in [this article](https://web.archive.org/web/20200308133606/https://shhnjk.blogspot.com/2019/07/intro-to-chromes-gold-features.html?m=1).
 
 ### Cookies
 
