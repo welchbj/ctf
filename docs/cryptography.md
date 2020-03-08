@@ -34,8 +34,8 @@ Block ciphers are symmetric-key-powered deterministic transformations on fixed-l
 
 Some potential attacks include:
 
-* Chosen plaintext attack. Find great explanations in the answers to [this StackOverflow question](https://crypto.stackexchange.com/questions/42891/chosen-plaintext-attack-on-aes-in-ecb-mode).
-* ECB cut-and-paste. Since the same plaintext will always produce the same ciphertext, you can re-order encrypted blocks to forge messages. This is well-explained within solutions to the [Cryptopals problem of the same name](https://cryptopals.com/sets/2/challenges/13).
+* Chosen plaintext attack: Find great explanations in the answers to [this StackOverflow question](https://crypto.stackexchange.com/questions/42891/chosen-plaintext-attack-on-aes-in-ecb-mode).
+* ECB cut-and-paste: Since the same plaintext will always produce the same ciphertext, you can re-order encrypted blocks to forge messages. This is well-explained within solutions to the [Cryptopals problem of the same name](https://cryptopals.com/sets/2/challenges/13).
 
 ### Cipher Block Chaining (CBC)
 
