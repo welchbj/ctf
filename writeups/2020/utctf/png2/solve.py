@@ -27,20 +27,20 @@ def get_image_dimensions(img_bytes):
 def iter_pixel_colors(img_bytes):
     img_bytes = img_bytes[21:]
     assert not (len(img_bytes) % 3)
-​
+
     for i in range(0, len(img_bytes), 3):
-        yield hex2rgb(img_bytes[i:i+3].hex())
+        yield hex2rgb(img_bytes[i:i + 3].hex())
 
 
 def main():
     with open(PNG2_FILE, 'rb') as f:
         png2_bytes = f.read()
     assert png2_bytes[:4] == b'PNG2'
-​
+
     width, height = get_image_dimensions(png2_bytes)
     img = Image.new('RGB', (width, height))
     pixels = img.load()
-​
+
     for i, rgb in enumerate(iter_pixel_colors(png2_bytes)):
         x = i % width
         y = i // width

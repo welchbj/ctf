@@ -14,7 +14,7 @@ Run against remote with:
 """
 
 BLOCK_LEN = 16
-PT_PREFIX = b'A'*(BLOCK_LEN*2-1)
+PT_PREFIX = b'A' * (BLOCK_LEN * 2 - 1)
 ALPHABET = [bytes([i]) for i in range(32, 128)]
 
 
@@ -44,7 +44,7 @@ def encrypt_ensure_prepended_a(io, pt):
 
 
 def get_block(ct, idx):
-    return ct[idx*BLOCK_LEN:(idx+1)*BLOCK_LEN]
+    return ct[idx * BLOCK_LEN:(idx + 1) * BLOCK_LEN]
 
 
 def num_blocks(pt_or_ct):
@@ -64,14 +64,14 @@ def leak_flag_len(io):
 
     offset = 1
     while True:
-        pt = PT_PREFIX + b'B'*offset
+        pt = PT_PREFIX + b'B' * offset
         ct = encrypt_ensure_prepended_a(io, pt)
 
         non_a_num_ct_blocks = num_blocks(ct) - 2
         if non_a_num_ct_blocks > flag_num_blocks:
             return (
-                (flag_num_blocks-1)*BLOCK_LEN +
-                (BLOCK_LEN-offset)
+                (flag_num_blocks - 1) * BLOCK_LEN +
+                (BLOCK_LEN - offset)
             )
 
         offset += 1
@@ -86,14 +86,14 @@ def leak_flag_contents(io, flag_len):
         padding_offset = (
             BLOCK_LEN - (char_idx % BLOCK_LEN) - 1
         )
-        pt = PT_PREFIX + b'B'*padding_offset
+        pt = PT_PREFIX + b'B' * padding_offset
 
         flag_ct = encrypt_ensure_prepended_a(io, pt)
         for c in ALPHABET:
-            candidate_ct = encrypt_ensure_prepended_a(io, pt+flag+c)
+            candidate_ct = encrypt_ensure_prepended_a(io, pt + flag + c)
             if (
-                get_block(candidate_ct, flag_block_idx+2) ==
-                get_block(flag_ct, flag_block_idx+2)
+                get_block(candidate_ct, flag_block_idx + 2) ==
+                get_block(flag_ct, flag_block_idx + 2)
             ):
                 flag += c
                 yield c

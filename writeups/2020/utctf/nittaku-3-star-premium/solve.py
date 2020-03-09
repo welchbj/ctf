@@ -3,7 +3,7 @@
 from scapy.all import *
 
 TARGET = '3.88.183.122'
-NULL_DATA = b'\x00'*48
+NULL_DATA = b'\x00' * 48
 
 data = b''
 i = 1

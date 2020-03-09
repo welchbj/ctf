@@ -2,7 +2,6 @@
 
 import base64
 import os
-import re
 import subprocess
 
 import requests
