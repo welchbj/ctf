@@ -113,6 +113,7 @@ From simple experimentation and [a StackOverflow post](https://stackoverflow.com
 Both GCC and Clang support macros for ignoring different classes of warnings and errors. Below are some snippets demonstrating this.
 
 Disabling all warnings:
+
 ```c
 _Pragma("GCC diagnostic ignored \\"-Weverything\\"");
 // or (s/clang/GCC)
@@ -120,6 +121,7 @@ _Pragma("GCC diagnostic ignored \\"-Weverything\\"");
 ```
 
 Force something to be a warning (even with `-Werror` enabled):
+
 ```c
 #pragma GCC diagnostic warning "-Wuninitialized"
 ```
@@ -129,6 +131,7 @@ Force something to be a warning (even with `-Werror` enabled):
 You don't always know what file you need to read. To quickly check a lot of candidate file names, the `__has_include` and `__has_include_next` macros are nice tools ([GCC docs](https://gcc.gnu.org/onlinedocs/cpp/_005f_005fhas_005finclude.html) and [Clang docs](https://clang.llvm.org/docs/LanguageExtensions.html#include-file-checking-macros)).
 
 `__has_include` can be used to selectively include files that actually exist in the following way:
+
 ```c
 #if __has_include("/some/file/1")
     #include "/some/file/1"
@@ -148,6 +151,7 @@ It is possible to coerce file contents into a C string array, which is a useful 
 * The flag file contents are `flag_prefix{flag_contents_here}`
 
 The first technique involves using macro string coercion:
+
 ```c
 void wrapper() {
 #define char_array(x) const char flag_string[] = x;
@@ -157,13 +161,14 @@ void wrapper() {
 )
 }
 
-// this produces the following C source:
+// This produces the following C source:
 void wrapper() {
 const char flag_string[] = "{flag_contents_here}";
 }
 ```
 
 Here's another similar technique, which uses `__VA_ARGS__` with macro string coercion.
+
 ```c
 void wrapper() {
 #define to_str(...) (#__VA_ARGS__)
@@ -173,7 +178,7 @@ const char flag_string[] =
 );
 }
 
-// this produces the following C source:
+// This produces the following C source:
 void wrapper() {
 const char flag_string[] =
 ("{flag_contents_here}");
@@ -185,6 +190,7 @@ const char flag_string[] =
 Full file content disclosure does not even require output reflection from the vulnerable service as long as you are able to retrieve the error code from the compilation process. This was demonstrated in the [compilerbot](https://ctftime.org/task/10196) challenge from HXP 36C3 CTF 2019.
 
 The first technique we'll examine (introduced in [this compilerbot writeup](https://github.com/tmr232/writeups/tree/master/hxp-36c3-ctf/compilerbot)). Once the length of the flag is known, each character from the flag's contents can be used to index a separate varying-length array. If we modify the length of the varying-length array until it would go out of bounds when accessing the array, we will learn the value of the character at the tested index of the flag. Here is a basic implementation would show one iteration of the attack:
+
 ```c
 #pragma clang diagnostic ignored "-Wchar-subscripts"
 #pragma clang diagnostic ignored "-Wunused-variable"
@@ -207,7 +213,7 @@ int main() {
     wrapper();
 }
 
-// this produces the following C source:
+// This produces the following C source:
 void wrapper() {
 const char test_array[100] = {0};
 const char c = test_array[
@@ -220,6 +226,7 @@ int main() {
 ```
 
 Another techinque involves abusing duplicate cases in switch statements to generate errors based on the value of an expression. This method comes from [this compilerbot writeup](https://github.com/OmerYe/ctf-writeups/blob/master/2019/36c3/compilerbot-solve.py). A basic implementation of this technique follows:
+
 ```c
 void wrapper() {
 #define to_str(...) (#__VA_ARGS__)

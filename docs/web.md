@@ -169,6 +169,7 @@ TODO: https://github.com/frohoff/ysoserial
 #### Crafting Custom Images
 
 Image manipulation on the command-line makes crafting payloads a little bit easier:
+
 ```sh
 # create an empty image
 convert -size 32x32 xc:white empty.jpg
@@ -251,7 +252,7 @@ Challenges involving public cloud providers will likely require something like:
 
 ### Amazon Web Services
 
-In terms of legitimate interaction with different AWS products, the [`awscli` package](https://github.com/aws/aws-cli) is king.
+For legitimate interaction with different AWS products, the [`awscli` package](https://github.com/aws/aws-cli) is king.
 
 [Rhino Security Labs](https://rhinosecuritylabs.com/) publishes the best content and writes the best tools for AWS security assessments. Their tool [`pacu`](https://github.com/RhinoSecurityLabs/pacu) automates a lot of attacks.
 

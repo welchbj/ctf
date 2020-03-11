@@ -2,9 +2,10 @@
 
 This document discusses different analysis tools, techniques, and general knowledge for reverse engineering problems.
 
-## Preliminary Analysis
+## Linux Preliminary Analysis
 
 There is a lot of information that can be gathered about a binary before diassembling, using tools from `radare2`, GNU binutils, and other tool suites. Here are some potentially useful snippets:
+
 ```sh
 # search for strings in a binary
 strings -a ./program
@@ -35,11 +36,12 @@ rabin2 -s ./program
 objdump -R ./program
 ```
 
-## `radare2`
+## `radare2` Snippets
 
 ### Preliminary Analysis
 
 `radare2` is a powerful command-line suite of tools for reverse engineering. To get started, print out some diagnostic information about a binary:
+
 ```sh
 rabin2 -I ./program
 ```
@@ -52,6 +54,7 @@ radare2 ./program
 ```
 
 This opens an interactive command-line interface, where we will do the bulk of the analysis and disassembly. Below are some useful snippets for reverse engineering tasks within the `radare2` shell.
+
 ```sh
 # run a detailed analysis of the loaded binary
 aaa
@@ -114,11 +117,13 @@ ahi s @@=0xdeadb33f 0xdeadb34f 0xdeadb35f
 ### Dynamic Analysis
 
 `radare2` can also be used for dynamic analysis (i.e., debugging). To open a program in debug mode, use:
+
 ```sh
 radare2 -d ./program arg1 arg2 arg3
 ```
 
 Alternatively, from an existing `radare2` shell, use:
+
 ```sh
 ood arg1 arg2 arg3
 ```
@@ -160,17 +165,44 @@ x @ eax
 `rahash2` is another command-line utility for hashing and encoding data in different formats. Below are some useful snippets.
 
 The following snippets are useful for encoding data:
+
 ```sh
 # rot13 encode / decode
 rahash2 -E rot -S s:13 -s 'a nice string'
 rahash2 -D rot -S s:13 -s 'n avpr fgevat'
 ```
 
-## Tracing Utilities
+## Linux Tracing Utilities
 
-### Linux - `strace` and `ltrace`
+### "Tracing" via GDB Scripts
+
+TODO: https://stackoverflow.com/questions/58851/can-i-set-a-breakpoint-on-memory-access-in-gdb
+
+TODO: https://spotless.tech/utctf-ctf-2020-Crack_the_heart.html
+
+TODO: https://stackoverflow.com/questions/10748501/what-are-the-best-ways-to-automate-a-gdb-debugging-session
+
+### Linux - eBPFs and `bpftrace`
+
+It turns out that Linux Kernel performance-tracing tools are also great for tracing CTF problem binaries. Some awesome introductory articles to Linux tracing through the lense of performance engineering include:
+
+* TODO: https://netflixtechblog.com/linux-performance-analysis-in-60-000-milliseconds-accc10403c55
+* TODO: http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html
+
+TODO: https://github.com/iovisor/bcc
+
+TODO: https://github.com/iovisor/bpftrace
+
+### `strace`
+
+#### `strace` Pitfalls
+
+TODO
+
+#### `strace` Snippets
 
 System calls can be traced and manipulated with the command-line program `strace`. Below are some useful snippets for reverse engineering challenges:
+
 ```sh
 # print instruction pointer at the time of the syscall
 strace -i ./program
@@ -228,7 +260,10 @@ strace -z ./program
 strace -e inject=ptrace:retval=0 ./program
 ```
 
+### `ltrace`
+
 Library calls can be traced with the command-line program `ltrace`. Below are some useful snippets:
+
 ```sh
 # TODO
 TODO

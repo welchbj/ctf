@@ -9,23 +9,23 @@ Querying for information on a Windows box can be annoying. Hopefully the below w
 ### Searching Files and Permissions
 
 ```posh
-# listing hidden files; -Force shows all files (including hidden)
+# List hidden files; -Force shows all files (including hidden).
 Get-ChildItem -Force
 Get-ChildItem -Hidden
 
-# show all streams for a file
+# Show all streams for a file.
 dir /r file.txt
 Get-Item file.txt -Stream *
 
-# recursive search for filename
+# Recursive search for filename patterns.
 dir /s needle
 Get-ChildItem -Path C:\*needle* -Recurse -ErrorAction SilentlyContinue -Force
 
-# recursive search for file contents
+# Native and Posh options for recursive search of file contents.
 findstr /s needle *
 Get-ChildItem -Path C:\ -Filter *needle* -Recurse -ErrorAction SilentlyContinue -Force
 
-# find volume label for a drive
+# Find the volume label for a drive.
 Get-ItemProperty -Path "HKLM:\Software\Microsoft\Windows Search\VolumeInfoCache\Z:" | Select-Object -Property VolumeLabel
 
 # search for file by hash
@@ -39,36 +39,36 @@ The below groups of snippets make use of both PowerShell and native system binar
 #### SID-related Queries
 
 ```posh
-# SID of all local users
+# Get SIDs of all local users.
 Get-LocalUser | Select-Object SID
 
-# SID of current local user
+# Options for getting SID of current local user.
 whoami /user
 wmic useraccount where name='%username%' get sid
 
-# SID by local username
+# Get SID by local username.
 wmic useraccount where name='<USERNAME>' get sid
 
-# SID by domain user
+# Get SID by domain username.
 wmic useraccount where (name='<USERNAME>' and domain='<DOMAIN>') get sid
 
-# user by SID
+# Get user by SID.
 wmic useraccount where sid='<SID>' get name
 ```
 
 #### Process Querying
 
 ```posh
-# dump data from all running processes
+# Dump data from all running processes.
 Get-CimInstance Win32_Process | Format-List *
 
-# filter by process name
+# Filter by process name.
 Get-CimInstante Win32_Process -Filter "name = 'notepad.exe'" | Format-List *
 
-# get binary path for all running processes
+# Get binary path for all running processes.
 Get-Process | Select-Object -ExpandProperty Path
 
-# get more-detailed metadata from a single process
+# Get more-detailed metadata from a single process.
 Get-Process -ID <PID> | Select-Object *
 (Get-Process -ID <PID>).StartInfo.Environment
 ```
@@ -76,15 +76,15 @@ Get-Process -ID <PID> | Select-Object *
 #### Service and Scheduled Task Querying
 
 ```posh
-# get formatted list of services
+# Get formatted list of services.
 Get-Service | Where Status -eq 'Running' | Out-GridView
 Get-Service | Where-Object {$_.Status -eq 'Running'} | Out-File -filepath .\running-services.txt
 
-# dump data from all services; second command limits to running services
+# Dump data from all services; second command limits to running services.
 Get-CimInstance Win32_Service | Format-List *
 Get-CimInstance Win32_Service -Filter "state = 'running'" | Format-List *
 
-# scheduled task querying
+# Scheduled task querying.
 Get-ScheduledTask | Get-ScheduledTaskInfo
 Get-WmiObject Win32_ScheduledJob
 ```
@@ -135,82 +135,100 @@ There are a few ways to query the event logs. If you have access to the Windows 
 
 `Get-WinEvent` allows for filtering of events before pulling them back from other systems. Below are some useful `Get-WinEvent` snippets:
 ```posh
-# limit the number of returned events
+# Limit the number of returned events.
 Get-WinExent -MaxEvents 1
 
-# query the System log
+# Query the System log.
 Get-WinEvent -FilterHashTable @{LogName='System'}
 
-# query multiple levels
+# Query multiple levels.
 Get-WinEvent -FilterHashTable @{LogName='Security';Level=1,2,3}
 
-# query on another computer in the network
+# Query on another computer in the network.
 Get-WinEvent -Computer SomeOtherComputer
 
-# query around a specific time range; can be useful for correlating suspicious events
+# Query around a specific time range; can be useful for correlating suspicious events.
 Get-WinEvent -FilterHashTable @{LogName='Security';StartTime="10/29/2019 11:45:00 AM";EndTime="10/29/2019 12:00:00 PM"}
 
-# filtering by event ID
+# Filtering by event ID.
 Get-WinEvent -FilterHashTable @{LogName='Application';Id=4107}
 
-# filtering via xpath to look at specific usernames
+# Filtering via xpath to look at specific usernames.
 Get-WinEvent -LogName 'Security' -FilterXPath "* [System[(EventId='4264')]] and * [EventData[@Name='TargetUserName'] and (Data='Brian' or Data='Administrator')]]"
 
-# search for data within events
+# Search for data within events.
 Get-WinEvent -FilterHashTable @{LogName='Security';data='Some Suspicious String'}
 
-# fuzzy searching with Where-Object
+# Fuzzy searching with Where-Object.
 Get-WinEvent -FilterHashTable @{LogName='Application';Id=602} | ?{$_.Message -like "*scheduled tasks suspicious content*"}
 
-# filter for interesting service / schtasks events
+# Filter for interesting service / schtasks events.
 Get-WinEvent -FilterHashTable @{LogName='Security';Id=601,602,4698} | Export-CSV service-schtasks-events.csv
 
-# filter for interesting account modification events
+# Filter for interesting account modification events.
 Get-WinEvent -FilterHashTable @{LogName='Security';Id=624,626,627,629,630,642,645,646,647,685,4720,4738,4741,4743,4742} | Export-CSV account-mod-events.csv
 
-# filter for interesting login / logoff events
+# Filter for interesting login / logoff events.
 Get-WinEvent -FilterHashTable @{LogName='Security';Id=528,529,530,531,532,533,534,535,536,537,538,539,551,678,679,680,681,4624,4625,4647,4648} | Export-CSV login-logoff-events.csv
 
-# filter for interesting firewall events
+# Filter for interesting firewall events.
 Get-WinEvent -FilterHashTable @{LogName='Security';Id=851,852,861,4946,4947,5025,5034} | Export-CSV firewall-events.csv
 
-# filter for credential access events
+# Filter for credential access events.
 Get-WinEvent -FilterHashTable @{LogName='Security';Id=686,4782,5379,5381,5382} | Export-CSV credential-access-events.csv
 ```
 
 #### Investigating Suspicious Entries
 
 If you come across a base64-encoded PowerShell payload (think `[Convert]::FromBase64String`), you can decode it with:
+
 ```sh
 echo -n <BASE64 BLOB> | base64 -d | iconv -f UTF-16LE -t ASCII
 ```
+
+## Corrupted Files
+
+This section covers techniques for identifying corrupted files and trying to repair them.
+
+### PNG Images
+
+TODO
+
+### GZIP Archives
+
+TODO
+
+### ZIP Archives
+
+TODO
 
 ## Memory Dumps
 
 ### Volatility
 
 [Volatility](https://github.com/volatilityfoundation/volatility) is a tool for analyzing RAM dumps from a variety of operating systems. Below are some useful snippets:
+
 ```sh
 export DUMP=./memory.vmem
 
-# get basic info for a dump, including recommended profiles
+# Get basic info for a dump, including recommended profiles.
 /opt/volatility -f $DUMP imageinfo
 
-# view processes; see also pslist and psscan
+# View processes; see also pslist and psscan.
 /opt/volatility -f $DUMP --profile=Win7SP0x64 pstree
 
-# dump the memory of a specific process
+# Dump the memory of a specific process.
 /opt/volatility -f $DUMP --profile=Win7SP0x64 memdump -p <PID> -D dump/
 
-# view commands run in the command prompt
+# View commands run in the command prompt.
 /opt/volatility -f $DUMP --profile=Win7SP0x64 connections
 
-# view network connections; use `consoles` to also get command prompt output
+# View network connections; use `consoles` to also get command prompt output.
 /opt/volatility -f $DUMP --profile=Win7SP0x64 cmdscan
 
-# view environment variables
+# View environment variables.
 /opt/volatility -f $DUMP --profile=Win7SP0x64 envars
 
-# view internet explorer history
+# View internet explorer history.
 /opt/volatility -f $DUMP --profile=Win7SP0x64 iehistory
 ```
