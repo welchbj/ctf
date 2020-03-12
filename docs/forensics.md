@@ -192,15 +192,29 @@ This section covers techniques for identifying corrupted files and trying to rep
 
 ### PNG Images
 
-TODO
+Find the PNG format specification [here](http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html).
+
+See [this writeup](https://web.archive.org/web/20191019011759/http://fuzyll.com/2015/uncorrupting-a-png-image/) for solving a more complication PNG-repairing problem that involves bruteforcing data to resolve chunk CRC and length errors.
 
 ### GZIP Archives
 
-TODO
+Find the GZIP archive specification [here](https://tools.ietf.org/html/rfc1952).
+
+To force `gunzip` to extract as many blocks as possible before the corrupted portions of the file, pipe your archive on stdin:
+
+```sh
+gunzip < archive.gz
+```
+
+For some potential quick wins, try the [`gzrecover`](https://github.com/arenn/gzrt) tool.
 
 ### ZIP Archives
 
-TODO
+Find the ZIP format specification [here](https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT).
+
+To get comprehensive details about the internal structure of a ZIP file, a good first step is the [`zipdetails`](https://manpages.ubuntu.com/manpages/trusty/man1/zipdetails.1.html) program.
+
+The Trail of Bits CTF guide [forensics section](https://trailofbits.github.io/ctf/forensics/#archive-files) has nice tips on dealing with ZIP archives.
 
 ## Memory Dumps
 
