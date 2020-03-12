@@ -226,23 +226,23 @@ The Trail of Bits CTF guide [forensics section](https://trailofbits.github.io/ct
 export DUMP=./memory.vmem
 
 # Get basic info for a dump, including recommended profiles.
-/opt/volatility -f $DUMP imageinfo
+volatility -f $DUMP imageinfo
 
 # View processes; see also pslist and psscan.
-/opt/volatility -f $DUMP --profile=Win7SP0x64 pstree
+volatility -f $DUMP --profile=Win7SP0x64 pstree
 
 # Dump the memory of a specific process.
-/opt/volatility -f $DUMP --profile=Win7SP0x64 memdump -p <PID> -D dump/
+volatility -f $DUMP --profile=Win7SP0x64 memdump -p <PID> -D dump/
 
 # View commands run in the command prompt.
-/opt/volatility -f $DUMP --profile=Win7SP0x64 connections
+volatility -f $DUMP --profile=Win7SP0x64 connections
 
 # View network connections; use `consoles` to also get command prompt output.
-/opt/volatility -f $DUMP --profile=Win7SP0x64 cmdscan
+volatility -f $DUMP --profile=Win7SP0x64 cmdscan
 
 # View environment variables.
-/opt/volatility -f $DUMP --profile=Win7SP0x64 envars
+volatility -f $DUMP --profile=Win7SP0x64 envars
 
 # View internet explorer history.
-/opt/volatility -f $DUMP --profile=Win7SP0x64 iehistory
+volatility -f $DUMP --profile=Win7SP0x64 iehistory
 ```
