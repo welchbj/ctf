@@ -23,16 +23,6 @@ end
 
 ## Tracing for Answers
 
-Getting the probable length of the solution is also as simple as catching a syscall:
-
-```gdb
-commands
-    silent
-    printf "Input read length: %d\n", $rdx
-    continue
-end
-```
-
 To generate output to be consumed by a SAT solver script, we use the following:
 
 ```sh
