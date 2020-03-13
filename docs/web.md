@@ -165,6 +165,9 @@ The gist of this type of attack is serving DNS records with a low TTL for an att
 
 A potentially useful tool for carrying out this attack is [Tavis Ormany's `rbndr` service](https://github.com/taviso/rbndr).
 
+### Client-side Sandbox Escapes
+
+For [`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) and [`async function`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) based techniques, see [this article](https://web.archive.org/web/20200301182100/http://blog.bentkowski.info/web/20180803213325/http://blog.bentkowski.info/2017/11/yet-another-google-caja-bypasses-hat.html?m=1).
 
 ### Browser JS Runtime Quirks
 
