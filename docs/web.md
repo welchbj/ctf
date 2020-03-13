@@ -157,8 +157,14 @@ xhr.open('GET', 'http://www.google.com', true);
 xhr.send(null);
 ```
 
+### DNS Rebinding
 
-TODO: fetch and XHR
+[DNS rebininding](https://en.wikipedia.org/wiki/DNS_rebinding) is a type of client-side attack for pivoting through the browser into a victim's private network.
+
+The gist of this type of attack is serving DNS records with a low TTL for an attacker-controlled domain, and then swapping out the IP address for that record so that it resolves to private IPs. Daniel Miessler has a great explanation [here](https://danielmiessler.com/blog/dns-rebinding-explained/).
+
+A potentially useful tool for carrying out this attack is [Tavis Ormany's `rbndr` service](https://github.com/taviso/rbndr).
+
 
 ### Browser JS Runtime Quirks
 
