@@ -163,7 +163,7 @@ xhr.send(null);
 
 The gist of this type of attack is serving DNS records with a low TTL for an attacker-controlled domain, and then swapping out the IP address for that record so that it resolves to private IPs. Daniel Miessler has a great explanation [here](https://danielmiessler.com/blog/dns-rebinding-explained/).
 
-A potentially useful tool for carrying out this attack is [Tavis Ormany's `rbndr` service](https://github.com/taviso/rbndr).
+A potentially useful tool for carrying out this attack is [Tavis Ormandy's `rbndr` service](https://github.com/taviso/rbndr).
 
 ### Client-side Sandbox Escapes
 
