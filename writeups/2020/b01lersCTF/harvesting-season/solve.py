@@ -20,7 +20,7 @@ def xor(one: bytes, two: bytes) -> bytes:
 def main():
     known_pt = b'pctf'
     candidate_keys = [
-        xor(CT[i:i+len(known_pt)], known_pt)
+        xor(CT[i:i + len(known_pt)], known_pt)
         for i in range(len(known_pt))
     ]
 

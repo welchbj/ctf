@@ -13,7 +13,7 @@ def main():
     start_addr = 0x49305d
     initial_state = project.factory.blank_state(addr=start_addr)
 
-    flag = claripy.BVS('flag', FLAG_LEN*8)
+    flag = claripy.BVS('flag', FLAG_LEN * 8)
 
     # We just need somewhere to store the flag buffer. Since
     # the region of the binary we are working doesn't use the
