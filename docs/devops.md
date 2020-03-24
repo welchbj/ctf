@@ -2,6 +2,33 @@
 
 This file contains some notes about editors, languages, and other tools I like to use on CTFs.
 
+## Version Control
+
+During CTFs, I still like to commit my writeups as a backup method. However, I can't push them to the public instance of this repo while the competition is ongoing, so I use a separate remote as a private version.
+
+When a new CTF is starting, I'll create a new branch and push it to the private repo (which is mapped to `origin`):
+
+```sh
+git checkout -b ctf/year/name-of-ctf
+git push -u origin --all
+```
+
+And when the CTF is over, I can publicly release my writeups:
+
+```sh
+# Merge the CTF branch in master.
+git checkout master
+git merge ctf/year/name-of-ctf
+
+# Push to private.
+git push -u origin --all
+
+# Push to public
+git push -u public --all
+```
+
+This process is explained at a high level in [this StackOverflow answer](https://stackoverflow.com/a/14243407).
+
 ## Editors
 
 ### Visual Studio Code
