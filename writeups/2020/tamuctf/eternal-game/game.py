@@ -18,7 +18,7 @@ def gen_hash(x):
 
 
 def extract_int(s):
-    i = len(s)-1
+    i = len(s) - 1
     result = 0
     while i >= 0 and s[i].isdigit():
         result *= 10

@@ -3,4 +3,5 @@ ignore = F403,F405,W504
 exclude =
     .git,
     __pycache__,
-    crypt1_reversed.py
+    crypt1_reversed.py,
+    game.py

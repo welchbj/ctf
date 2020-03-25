@@ -18,7 +18,7 @@ class ExfilHandler(BaseHTTPRequestHandler):
         try:
             exfil_data = base64.b64decode(self.path[1:]).decode()
             print(exfil_data)
-        except:
+        except Exception:
             print('Unable to decode data:')
             print(self.path)
 

