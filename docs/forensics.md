@@ -216,6 +216,12 @@ To get comprehensive details about the internal structure of a ZIP file, a good 
 
 The Trail of Bits CTF guide [forensics section](https://trailofbits.github.io/ctf/forensics/#archive-files) has nice tips on dealing with ZIP archives.
 
+## File System Dumps
+
+### Expert Witness Files
+
+I've found the [FTK Imager tool](https://marketing.accessdata.com/ftkimager4.2.0) to be the best at examining images of this format.
+
 ## Memory Dumps
 
 ### Volatility
@@ -246,3 +252,5 @@ volatility -f $DUMP --profile=Win7SP0x64 envars
 # View internet explorer history.
 volatility -f $DUMP --profile=Win7SP0x64 iehistory
 ```
+
+The best practical applications of Volatility I've seen come from [Andrea Fortuna's website](https://www.andreafortuna.org/). [Here](https://www.andreafortuna.org/2018/03/02/volatility-tips-extract-text-typed-in-a-notepad-window-from-a-windows-memory-dump/) is an example of extracting strings written within a notepad process.
