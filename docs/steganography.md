@@ -40,10 +40,26 @@ xortool -l 32 -f -t base64 -b some_xored_file
 xortool -m 128 some_xored_file
 ```
 
-For implementing xor-ing within a Python script, `pwntools` is a good choice. The library ships with a few pieces of xor functionality, which can be used in the following ways:
+For implementing xor-ing within a Python script, I usually paste around this function:
 
 ```python
-# TODO: xor, xor_key, xor_pair examples
+import itertools
+
+...
+
+def xor(
+    ct: bytes,
+    key: bytes
+) -> bytes:
+    """XOR the provided ciphertext with the given key.
+
+    The XOR-ing will continuously loop through the key if the ciphertext is
+    longer than the key.
+
+    """
+    return bytes([
+        a ^ b for a, b in zip(ct, itertools.cycle(key))
+    ])
 ```
 
 ## Unicode Woes
@@ -59,13 +75,56 @@ If you encounter odd strings of unicode characters that you can't view, try past
 
 An awesome tool for visualizing an audio file is [SonicVisualiser](https://www.sonicvisualiser.org/). Flags are often encoded within the waveforms of audio files.
 
+An alternative waveform visualizer is the [`sox` suite of tools](http://sox.sourceforge.net/Docs/Features):
+
+```sh
+sox the_file.wav -n spectrogram
+```
+
+See [this amazing writeup by HXP](https://hxp.io/blog/19/TUMCTF-Teaser-2015-Misc-200-Autoaggressive-Desensitization-writeup/) for a CTF challenge that involved non-trivial spectrogram inspection and extrapolation.
+
+### Dual-tone Multi-frequency Signalling (DTMF)
+
+[DTMF](https://en.wikipedia.org/wiki/Dual-tone_multi-frequency_signaling) is a system that encodes data over the voice-frequency band. For automated extraction of data from DTMF audio samples, see [this tool](https://unframework.github.io/dtmf-detect/).
+
 ### WAV Files
 
-The [WavSteg](https://github.com/ragibson/Steganography#wavsteg) tool from the `stego-lsb` suite is a nice starting point for LSB analysis of WAV files. You can invoke as so:
+The best guide to the WAV file format that I've found is [here](http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html). A nice complement to that guide is [this one](https://wavefilegem.com/how_wave_files_work.html), which includes a lot of details on different audio configuration parameters of WAV files.
+
+For automatic analysis of potential LSB/MSB encoding, the [WavSteg](https://github.com/ragibson/Steganography#wavsteg) tool from the `stego-lsb` suite is a nice starting point. You can invoke as so:
 
 ```sh
 stegolsb wavsteg -r -i the_file.wav -o output.txt -n 2
 ```
+
+For more manual analysis, the Python standard libary actually ships with a built-in [`wave` module](https://docs.python.org/3/library/wave.html). However, I've seen this library choke on some WAV formats. A more robust solution is the [SoundFile project](https://pysoundfile.readthedocs.io/en/latest/). Here's a quick example that uses the [BitArray package](https://github.com/ilanschnell/bitarray) to display a WAV file's 32-bit IEEE float encoded data as binary strings:
+
+```python
+#!/usr/bin/env python3
+
+import bitstring
+import soundfile as sf
+
+
+def binary(fl):
+    bs = bitstring.BitArray(float=fl, length=32)
+    return bs.bin
+
+
+def main():
+    data, fs = sf.read('the-file.wav')
+
+    for d in data:
+        print(binary(d))
+
+
+if __name__ == '__main__':
+    main()
+```
+
+Manual LSB-encoded-data extraction via the [`wav-file`](https://wavefilegem.com/) Ruby gem is contained within [this writuep](https://ethackal.github.io/2015/10/05/derbycon-ctf-wav-steganography/).
+
+Sometimes, hidden data can be endoded as the result of some kind of computation between the data in multiple channels. [This CTF writeup](https://ctfcrew.org/writeup/91) explores that idea.
 
 ## Image Analysis
 
