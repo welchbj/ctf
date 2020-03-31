@@ -132,6 +132,8 @@ Sometimes, hidden data can be endoded as the result of some kind of computation 
 
 The most extensive collection of steganography tools is the [stego-toolkit](https://github.com/DominicBreuker/stego-toolkit) project. It has a lot of [scripts](https://github.com/DominicBreuker/stego-toolkit/tree/d2f7892c8c31addfcc92a42a56b54363a3ae1148/scripts) for orchestrating a lot of other popular stego tools.
 
+For some potential quick wins from your browser, checkout this [online tool](https://stylesuxx.github.io/steganography/), which will try some basic decoding tricks.
+
 ### Metadata
 
 A quick glance at an image file's metadata is a good starting point. `exiftool` is a nice tool for printing out this diagnostic information:
@@ -147,6 +149,12 @@ If the image has a thumbnail, it's probably worth extracting that and looking at
 ```sh
 exiftool -binary -ThumbnailImage image.jpg | exiftool -binary -ThumbnailImage - | exiftool -binary -ThumbnailImage - > thumbnail.jpg && eog thumbnail.jpg
 ```
+
+### Function-based Pixel Selection
+
+A common steganographic technique is to hide data only at certain pixels within an image. Specific functions are used to determine which of the pixels within an image will be the ones to carry the hidden data.
+
+A solution for a CTF challenge that selected pixels via a [Hilbert Curve](https://en.wikipedia.org/wiki/Hilbert_curve) can be found [here](https://ctftime.org/writeup/19158).
 
 ### File Corruption
 
