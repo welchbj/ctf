@@ -97,3 +97,5 @@ For a more involved writeup that doesn't just involve using the vanilla version 
 It's important to note that **all** hashing algorithms are vulnerable collisions (due to the [birthday problem](https://en.wikipedia.org/wiki/Birthday_problem)). Conditions which cause collisions can just be more precisely controlled in some algorithms versus others.
 
 It is now feasible (and within scope of a CTF challenge) to collide hashes for some weaker/older hashing algorithms (think MD5 and SHA1). The [collisions](https://github.com/corkami/collisions) repository has great explanations of and example code for different collision-based attacks. The [hashclash tool](https://github.com/cr-marcstevens/hashclash) provides utilities for performing some collision attacks.
+
+Some challenges may become simpler with knowledge of "special" hashes, such as those with many leading zeroes. Some interesting plaintexts and their corresponding hashes can be found at [this link](https://web.archive.org/web/20180419023213/http://0xf.kr/md5/).
