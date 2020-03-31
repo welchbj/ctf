@@ -27,7 +27,7 @@ A great ROP gadget available to us is the address of the `execl` function. Fortu
 
 * Send 1048 dummy bytes, bringing us right next to where the stored EIP address is in the stack frame.
 * Overwrite EIP with the address of `execl`.
-* Make fake stack arguments to achieve a call of `execl("/bin/sh", "/bin/sh", "-c")
+* Make fake stack arguments to achieve a call of `execl("/bin/sh", "/bin/sh", "-c")`
 * `gzip` our whole payload and send it to the target.
 
 Find these steps in my solution script [here](./solve.py).
