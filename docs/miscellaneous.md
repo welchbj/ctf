@@ -2,6 +2,13 @@
 
 Where the other stuff doesn't fit.
 
+## `chroot` Jails
+
+[`chroot`](https://en.wikipedia.org/wiki/Chroot) jails are a weak attempt at isolating processes (when misused for that purpose). Here are some good resources for escaping from them:
+
+* [Escaping a chroot jail](Escaping a chroot jail): Comprehensive article that dives into the details and provides a universal `chroot` escape program.
+* [Breaking Out of a Chroot Jail Using PERL](http://pentestmonkey.net/blog/chroot-breakout-perl): A shorter page that still covers some of the basics, and provides a PERL breakout script.
+
 ## Password Cracking
 
 ### John the Ripper

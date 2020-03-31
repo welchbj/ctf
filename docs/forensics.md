@@ -4,7 +4,7 @@ Forensics is an interesting category of CTF problems and requires knowing how da
 
 ## Windows Analysis
 
-Querying for information on a Windows box can be annoying. Hopefully the below will help.
+Querying for information on a Windows box can be annoying. An excellent general reference is the [SANS Windows forensics poster](https://www.sans.org/security-resources/posters/windows-forensic-analysis/170/download).
 
 ### Searching Files and Permissions
 
@@ -216,6 +216,12 @@ To get comprehensive details about the internal structure of a ZIP file, a good 
 
 The Trail of Bits CTF guide [forensics section](https://trailofbits.github.io/ctf/forensics/#archive-files) has nice tips on dealing with ZIP archives.
 
+## File System Dumps
+
+### Expert Witness Files
+
+I've found the [FTK Imager tool](https://marketing.accessdata.com/ftkimager4.2.0) to be the best at examining images of this format.
+
 ## Memory Dumps
 
 ### Volatility
@@ -246,3 +252,11 @@ volatility -f $DUMP --profile=Win7SP0x64 envars
 # View internet explorer history.
 volatility -f $DUMP --profile=Win7SP0x64 iehistory
 ```
+
+The best practical applications of Volatility I've seen come from [Andrea Fortuna's website](https://www.andreafortuna.org/). [Here](https://www.andreafortuna.org/2018/03/02/volatility-tips-extract-text-typed-in-a-notepad-window-from-a-windows-memory-dump/) is an example of extracting strings written within a notepad process.
+
+## Application Forensics
+
+### Keybase
+
+The best research I've seen on Keybase encrypted chat forensics can be found [here](https://hatsoffsecurity.com/2020/02/23/keybase-io-forensics-investigation/).
