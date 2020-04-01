@@ -187,6 +187,8 @@ TODO
 
 ### Server-side Template Injection (SSTI)
 
+This section covers some general tools for SSTI. For language-specific injection techniques, see the [injections](./injections.md) page.
+
 #### Enumeration
 
 Nothing comes close to [`tplmap`](https://github.com/epinna/tplmap) for exploratory injection scanning and automated exploitation.
@@ -195,27 +197,16 @@ Nothing comes close to [`tplmap`](https://github.com/epinna/tplmap) for explorat
 
 If you don't use the `tplmap` project for injection enumeraton, you can at least use it as a reference for [different templating engine payloads](https://github.com/epinna/tplmap/blob/749807616ab1b173827913b325c5974e8f77f3d8/plugins/engines).
 
-#### JavaScript SSTI Tips
-
-In the event that the server restricts the permitted set of input characters, you may have to get fancy. Fortunately, this is a trodden path. The [jsfuck](https://github.com/aemkei/jsfuck) project has compiled gadgets for a primitive set of characters that can be used to generate any JavaScript payload.
-
-Good `jsfuck`-inspired gadget lists can be found [in its source](https://github.com/aemkei/jsfuck/blob/76fe36a5c0e3365c0e7fae8086e92233b907d2a5/jsfuck.js#L9-L115) and [in its Wikipedia page](https://en.wikipedia.org/wiki/JSFuck).
-
-The gist of most JavaScript injections involve walking up to the [`Function`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) constructor, defining a generic payload from a string, and executing the new `Function` definition. This usually equates to something along the lines of `[]['fill']['constructor']('alert(1);')()`.
-
-These techniques are applicable to frontend injections, as well.
-
-#### Python SSTI Tips
-
-Most Python template injection challenges will involve trying to walk your way up to process-spawning reference somewhere in memory. A lot of guides will tell you to get a reference to `subprocess.Popen` via `__mro__ -> object -> __subclasses__()`, but I think a much better generic solution is walking up to `builtins['__import__']` via the `__globals__` attribute of any defined method of any object instance floating around in memory.
-
-If seeing command output inline is a must, then aiming for a payload that achieves `__import__('subprocess').check_output('/bin/bash -c "cat fl* /fl* /home/*/fl*"', shell=True)` is a good target.
-
-For Flask/Jinja SSTI problems, if `_` is blacklisted then a pretty generic gadget for it is `g.get|string|slice(4)|first|last`. A great overall reference for Flask/Jinja SSTI can be found [here](https://web.archive.org/web/20200217202837/https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti).
-
 ### Antivirus Oracles
 
-An increasingly popular genre of web challenges involves using some serverside AV program as an oracle for the contents of the flag file or other import information. PortSwigger provides a nice overview of this concept [here](https://portswigger.net/daily-swig/av-oracle-new-hacking-technique-leverages-antivirus-to-steal-secrets). Some specific challenge writeups include:
+An increasingly popular genre of web challenges involves using some serverside AV program as an oracle for the contents of the flag file or other import information.
+
+PortSwigger provides a nice overview of this concept [here](https://portswigger.net/daily-swig/av-oracle-new-hacking-technique-leverages-antivirus-to-steal-secrets). [Alexei Bulazel](https://twitter.com/0xAlexei) (among other RPI researchers) have also produced great research on this topic:
+
+* [Windows Offender: Reverse Engineering Windows Defender's Antivirus Emulator (BlackHat 2018)](https://i.blackhat.com/us-18/Thu-August-9/us-18-Bulazel-Windows-Offender-Reverse-Engineering-Windows-Defenders-Antivirus-Emulator.pdf)
+* [AVLeak: Fingerprinting Antivirus Emulators Through Black-Box Testing](https://www.usenix.org/system/files/conference/woot16/woot16-paper-blackthorne_update.pdf)
+
+Some specific challenge writeups include:
 
 * [WCTF2019: Gyotaku The Flag](https://github.com/icchy/wctf2019-gtf): Post-mortem of a challenge that tried to enforce a Windows Defender side-channel solution, but had a simple bypass. The accompanying presentation in this repository is a gold mine covering some corner-case behavior of Windows Defender's JavaScript engine.
 * [TokyoWesterns CTF 2019 - phpnote](https://saarsec.rocks/2019/09/04/twctf-phpnote.html): Another nice challenge/writeup involving a PHP server and a JavaScript-payload oracle.
