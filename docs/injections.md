@@ -102,7 +102,7 @@ location='javascript'+':'+x
 
 Client-side execution with `a-zA-Z0-9=+{}` charset (see [@terjanq's tweet](https://twitter.com/terjanq/status/1223403166118694912) and [related slackers thread](https://www.reddit.com/r/Slackers/comments/ex5mmt/cool_ways_to_generate_strings_in_javascript/)).
 
-Server-side execution with `^[a-zA-Z0-9 ${}\`]+$` [see Balsn's writeup](https://balsn.tw/ctf_writeup/20200314-confidencectf2020teaser/#temple-js-(unsolved)):
+Server-side execution with ``^[a-zA-Z0-9 ${}`]+$`` [see Balsn's writeup](https://balsn.tw/ctf_writeup/20200314-confidencectf2020teaser/#temple-js-(unsolved)):
 
 ```javascript
 Function`a${`return constructor`}{constructor}` `${constructor}` `return flag` ``
