@@ -4,6 +4,13 @@ This page covers tips and tricks for making the most of injections into vulnerab
 
 ## Structed Query Language (SQL)
 
+### General Resources
+
+Some good general-purpose SQL injection resources:
+
+* [websec.ca](https://websec.ca/kb/sql_injection): MySQL-focused, includes topics ranging from default MySQL tables to DNS out of band channeling techniques.
+* [pentestmonkey](http://pentestmonkey.net/cheat-sheet/sql-injection/mssql-sql-injection-cheat-sheet): Any of these cheat sheets is a great resource. Each one covers a different DBMS.
+
 ### `sqlmap`
 
 I am always amazed by the power of [`sqlmap`](https://github.com/sqlmapproject/sqlmap) when I use it. This section includes some general tips for this tool's use and some resources for customizing its behavior.
@@ -38,6 +45,41 @@ And can then be invoked with:
 ```sh
 sqlmap -r recorded-request.req --batch --tamper path/to/my/tamper/script.py
 ```
+
+### Out of Band Exfiltration
+
+With some blind injections, the only method of exfiltrating data is out of band. Out of band means via a channel not in the synchronous communication that generated the SQL query, so think external network communications like DNS. A great resource for Postgres techniques is covered in [this writeup of the fbctf 2019 challenge hr_admin_module](https://github.com/PDKT-Team/ctf/blob/master/fbctf2019/hr-admin-module/README.md).
+
+## Bash
+
+Bash is an interesting target for injection challenges because there are so many little-known and arcane features scattered throughout it. This section aims to document some potentially useful techniques.
+
+### Bypassing Extreme Character Blacklists
+
+Some useful primitives to get you started:
+
+* Bash's brace expansion means `{a,b,c} == a b c`.
+* Characters can be encoded using octal escape sequences like `$'\'`.
+* `$#` is the number of parameters.
+* `$$` is the process ID.
+* [Indirect parameter expansion](https://www.tldp.org/LDP/abs/html/ivr.html) can be applied to Bash's special variables, which means `${!#} == ${0} == /bin/bash` if there are zero parameters passed to Bash.
+* `<<<` is Bash's [here string](https://www.tldp.org/LDP/abs/html/x17837.html) operator, which allows for writing a string to a process's stdin.
+
+Additional good resources include [GNU's page on Bash special characters](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html) and [The Linux Documentation Project's Bash Internal Variables page](http://tldp.org/LDP/abs/html/internalvariables.html).
+
+For a challenge that uses some of these techniques, check out [this superb writeup of the 34C3 CTF challenge minbashmaxfun](https://hack.more.systems/writeup/2017/12/30/34c3ctf-minbashmaxfun/), which involves crafting a payload comprised of only the characters `$ ( ) # ! { } < \ ' ,`. LiveOverflow explores similar techniques in his [Bash injection without letters or numbers - 33c3ctf hohoho](https://www.youtube.com/watch?v=6D1LnMj0Yt0) video.
+
+### Arithmetic Injections
+
+If you can inject into a Bash arithmetic expression (think `$(( var_name + 1))`), that is actually enough to achieve code execution. This is due to the fact that Bash allows for arbitrary evaluation of array indexing operands, which means injecting a subprocess via ```id``` or `$(id)` is fair game. Here is an example:
+
+```sh
+$ x='__[$(id)]'
+$ y=$(( 1+x ))
+-bash: uid=1001(user) gid=1001(user)...
+```
+
+p4 provides a nice [writeup and explanation](https://github.com/p4-team/ctf/tree/master/2019-10-19-seccon/multiplicater) that uses this technique to a solve a challenge from SECCON 2019. Likewise, PlaidCTF 2020's challenge [JSON Bourne](https://ctftime.org/task/11317) could be solved with this kinda of injection, as was done [here](https://ctftime.org/writeup/20090).
 
 ## Python
 
