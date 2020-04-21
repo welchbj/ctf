@@ -4,7 +4,9 @@ Where the other stuff doesn't fit.
 
 ## Geography Data
 
-TODO
+Data that looks like it is binary encoded or base32-ish is likely [GeoHash encoded](https://en.wikipedia.org/wiki/Geohash). Some calculators for decoding this data can be found on [geohash.co](http://geohash.co/) or on [dcode.fr](https://www.dcode.fr/geohash-coordinates). However, don't discount the fact that it might just be the latitude/longitude encoded as [IEEE 754 floats](https://www.h-schmidt.net/FloatConverter/IEEE754.html).
+
+A nice writeup covering some of these encoding formats can be found [here](https://github.com/lyellread/ctf-writeups/tree/master/2020-tamuctf/geography).
 
 ## QR Codes
 
