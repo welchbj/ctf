@@ -36,142 +36,6 @@ rabin2 -s ./program
 objdump -R ./program
 ```
 
-## `radare2` Snippets
-
-### Preliminary Analysis
-
-`radare2` is a powerful command-line suite of tools for reverse engineering. To get started, print out some diagnostic information about a binary:
-
-```sh
-rabin2 -I ./program
-```
-
-### Static Analysis
-
-Then load the binary for further analysis with:
-```sh
-radare2 ./program
-```
-
-This opens an interactive command-line interface, where we will do the bulk of the analysis and disassembly. Below are some useful snippets for reverse engineering tasks within the `radare2` shell.
-
-```sh
-# run a detailed analysis of the loaded binary
-aaa
-
-# print program entry points
-ie
-
-# print flag spaces; these are interesting offsets in the file
-fs
-
-# choose the `imports` flag space and print the flags that it contains
-fs imports; f
-
-# print strings within the data sections; use izz for global search
-iz
-
-# search for cross-references to all string flags; @@ acts like a `for-each` iterator
-fs strings; axt @@ str.*
-
-# list functions analyzed by radare (analyze function list)
-afl
-
-# seek to a symbol or address
-s main
-s 0xdeadbeef
-
-# seek to previous location
-s -
-
-# show disassembly from the current position (print diasessmble function)
-pdf
-
-# show disassembly from specific position (@ means temporary seek)
-pdf @ sym.main
-
-# switch to visual mode; navigate with the followings keys:
-#     p/P           -> move forward/backward between views
-#     u/U           -> move forward/backward between seeks
-#     x/X           -> list references to/from a function
-#     m<key>/'<key> -> mark a location and go to it from anywhere
-#    :<command>     -> execute a radare2 command
-#    ;<comment>     -> add a comment
-#    ;-             -> remove a comment
-#    <digit>        -> follow the corresponding call/jump
-#    q              -> return to the radare2 shell
-#    r              -> refresh graph
-V
-
-# switch to graph mode; most keybindings from V will still work, also see:
-#    g<key> -> jump to a function
-VV
-
-# convert a value to a variety of formats
-? 0xdead
-
-# mark several addresses as strings
-ahi s @@=0xdeadb33f 0xdeadb34f 0xdeadb35f
-```
-
-### Dynamic Analysis
-
-`radare2` can also be used for dynamic analysis (i.e., debugging). To open a program in debug mode, use:
-
-```sh
-radare2 -d ./program arg1 arg2 arg3
-```
-
-Alternatively, from an existing `radare2` shell, use:
-
-```sh
-ood arg1 arg2 arg3
-```
-
-Once in a debugging shell, the following commands may be useful:
-```sh
-# continue execution until a specified symbol is reached
-dcu main
-
-# step 5 times
-ds 5
-
-# step into / step over current instruction
-s
-S
-
-# set / remove a breakpoint
-db 0xdeadbeef
-db -0xdeadbeef
-
-# continue execution
-dc
-
-# continue until syscall
-dcs
-
-# show process maps
-dm
-
-# set register value
-dr eax=44
-
-# dump value at register
-x @ eax
-```
-
-### `rahash2` Snippets
-
-`rahash2` is another command-line utility for hashing and encoding data in different formats. Below are some useful snippets.
-
-The following snippets are useful for encoding data:
-
-```sh
-# rot13 encode / decode
-rahash2 -E rot -S s:13 -s 'a nice string'
-rahash2 -D rot -S s:13 -s 'n avpr fgevat'
-```
-
 ## Linux Tracing Utilities
 
 ### "Tracing" via GDB Scripts
@@ -268,3 +132,37 @@ Library calls can be traced with the command-line program `ltrace`. Below are so
 # TODO
 TODO
 ```
+
+### Statement-level Tracing
+
+Sometimes you have to go deeper. This may involve tracing a binary's execution at the processor statement-level. A CTF writeup that surveys possible techniques can be found [here](https://fevral.github.io/2017/08/13/flareon2015-2.html).
+
+#### Frida
+
+[Frida](https://frida.re/) is a powerful dynamic instrumentation framework. [Here](https://sectt.github.io/writeups/Volga20/f-hash/README) is an example of a CTF writeup that uses Frida to memoize the result of an expensive recursive function.
+
+## File Systems
+
+### FAT32
+
+The loose nature of references in [FAT file systems](https://en.wikipedia.org/wiki/Design_of_the_FAT_file_system) allows for the encoding of data that probably doesn't belong in a file system. For some FAT32-parsing Python utilities (borrowed from a separate gist I found online), see [my strcmp go brrrr writeup](https://github.com/welchbj/ctf/tree/master/writeups/2020/PlaidCTF/file-system-based-strcmp-go-brrrr). See [here](https://www.pjrc.com/tech/8051/ide/fat32.html) for a nice general FAT32 reference.
+
+A useful utility for these challenges is [fatcat](https://github.com/Gregwar/fatcat). Its use (among other techniques) is documented in [this writeup](https://ctftime.org/writeup/20091).
+
+## Weird File Formats
+
+### Adobe Director
+
+An example of reversing files created with Adobe Director comes from Plaid CTF 2020's [YOU wa SHOCKWAVE](https://ctftime.org/task/11307) challenge. A comprehensive writeup can be found [here](https://github.com/jacopotediosi/Writeups/tree/master/CTF/2020/PlaidCTF-2020/Rev-You_wa_shockwave-250), which introduces the following tools and resources:
+
+* [A Tour of the Adobe Directory File Format](https://medium.com/@nosamu/a-tour-of-the-adobe-director-file-format-e375d1e063c0): A nice overview of the data you may encounter.
+* [DCR2DIR](https://github.com/Brian151/OpenShockwave/tree/master/tools/imports): Convert a DCR file to DIR format.
+* [Lingo script extractor](https://alex-dev.org/lscrtoscript/): Finds embedded scripts from DCR files.
+
+## Working with Other Architectures and Operating Systems
+
+Sometimes you encounter binaries requiring setups that you don't have immediate access to. Here are some projects that might get you what you need:
+
+* [Darling](https://www.darlinghq.org/): A translation layer that lets you run macOS software on Linux. Find an article demonstrating its use [here](https://0xdf.gitlab.io/2019/07/01/darling-running-macos-binaries-on-linux.html).
+* [OSX-KVM](https://github.com/kholia/OSX-KVM): Run macOS on QEMU/KVM.
+* [arm_now](https://github.com/nongiach/arm_now): Quickly setup VMs via QEMU for working with ARM, MIPS, PowerPC, and other architectures.

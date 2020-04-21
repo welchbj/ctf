@@ -9,6 +9,14 @@ Where the other stuff doesn't fit.
 * [Escaping a chroot jail](Escaping a chroot jail): Comprehensive article that dives into the details and provides a universal `chroot` escape program.
 * [Breaking Out of a Chroot Jail Using PERL](http://pentestmonkey.net/blog/chroot-breakout-perl): A shorter page that still covers some of the basics, and provides a PERL breakout script.
 
+## Geography Data
+
+TODO
+
+## QR Codes
+
+The ultimate guide can be found [here](https://www.thonky.com/qr-code-tutorial/).
+
 ## Password Cracking
 
 ### John the Ripper

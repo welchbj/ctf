@@ -51,6 +51,55 @@ The [Hill Cipher](https://en.wikipedia.org/wiki/Hill_cipher) is a variation of t
 
 For a more CTF-oriented look at the basics, try [this link](https://bitsdeep.com/posts/attacking-rsa-for-fun-and-ctf-points-part-1/).
 
+### Factoring
+
+Factoring the public modulus can lead to quick wins in CTFs. Being able to factor numbers is something that can come up in a variety of other crypto problems, too. Here are some ways to do it.
+
+#### SageMath
+
+The [SageMath](https://www.sagemath.org/) toolkit has a lot of awesome tools. Here's how to factor a number with it:
+
+```sh
+$ sage -c 'print(factor(126390312099294739294606157407778835887))'
+9336949138571181619 * 13536574980062068373
+```
+
+#### factordb
+
+[An online database](http://factordb.com/) of different numbers' factorizations.
+
+#### Alpertron
+
+An online interface like factordb, [Alpertron's calculator](https://www.alpertron.com.ar/ECM.HTM) will actually apply some algorithms to try to factor your number instead of just looking up previously-recorded values.
+
+#### Factorization Attacks
+
+The [FactHacks website](https://facthacks.cr.yp.to/index.html) and [accompanying 29C3 talk](https://fahrplan.events.ccc.de/congress/2012/Fahrplan/events/5275.en.html) discuss real-world attacks on RSA factorization. Some of the attacks they detail:
+
+* TODO
+* TODO
+* TODO
+
+Their site has extensive Sage examples for all attacks mentioned and is a great reference.
+
+### Types of Attacks
+
+#### Modulus Re-use
+
+TODO
+
+#### Hastad's Broadcast Attack
+
+TODO
+
+#### Franklin-Reiter related-message attack
+
+TODO
+
+#### Coppersmith's Short-pad Attack
+
+TODO
+
 ### Applications of Number Theory
 
 For a nice challenge and writeup applying number theory to solving an RSA problem, look [here](https://advenamtacet.github.io/Writeups/rsa/math/justctf/2020/01/25/RSA-exponent-task.html).
