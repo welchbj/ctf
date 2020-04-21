@@ -22,6 +22,10 @@ If you see UDP traffic to port 8443, this should be a give away for [QUIC](https
 * [curl](https://curl.haxx.se/): Follow [these instructions](https://github.com/curl/curl/blob/3ea15be3f3d6c77adc9fe22ad0b0208466d622d1/docs/HTTP3.md#quiche-version) for building from source, using Quiche as the underlying HTTP/3 library.
 * [aioquic](https://github.com/aiortc/aioquic): The best option if you require a Python library.
 
+### DNS Tools
+
+If need to be able to control the IP address that a domain resolves to (perhaps for some kind of SSRF), then [xip.io](http://xip.io/) is a good option. [localtest.me](localtest.me) is another option that resolves to `127.0.0.1`.
+
 ## Client-side
 
 ### Document Object Model (DOM)
