@@ -132,7 +132,7 @@ Sometimes, hidden data can be endoded as the result of some kind of computation 
 
 The most extensive collection of steganography tools is the [stego-toolkit](https://github.com/DominicBreuker/stego-toolkit) project. It has a lot of [scripts](https://github.com/DominicBreuker/stego-toolkit/tree/d2f7892c8c31addfcc92a42a56b54363a3ae1148/scripts) for orchestrating a lot of other popular stego tools.
 
-For some potential quick wins from your browser, checkout this [online tool](https://stylesuxx.github.io/steganography/), which will try some basic decoding tricks.
+For some potential quick wins from your browser, checkout this [online tool](https://stylesuxx.github.io/steganography/) or [this one](https://georgeom.net/StegOnline/upload).
 
 ### Metadata
 
@@ -173,6 +173,10 @@ Below is a table of the common byte sequences found within the most popular imag
 | TIFF big-endian        | `b'\x49\x49\x2a\x00'`              |
 | TIFF little-endian     | `b'\x4d\x4d\x00\x2a'`              |
 | JPEG                   | `TODO`                             |
+
+### Pixel-value Differencing
+
+This technique encodes data in the differences between differnet pixel values. The original paper that introduced it can be found [here](https://people.cs.nctu.edu.tw/~whtsai/Journal%20Paper%20PDFs/Wu_&_Tsai_PRL_2003.pdf), and a nice writeup for solving a challenge based on it from TJCTF 2019 can be found [here](https://github.com/zst-ctf/tjctf-2019-writeups/tree/master/Writeups/Planning_Virtual_Distruction).
 
 ### BMP File Format
 
