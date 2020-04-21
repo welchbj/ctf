@@ -257,4 +257,6 @@ int main() {
 }
 ```
 
-A bit more involved than the previous two methods, the `.incbin` assembler directive can be used. RPISEC has published [an awesome writuep](https://rpis.ec/blog/hxp-26c3-ctf-compilerbot/) which explores this method. The gist of their solution is to use `.incbin` to test different characters of the flag contents in one of the ELF header sections, causing a linkage error to be printed. A nice bonus of this technique is that variations of it can work with both Clang and GCC.
+In the same spirit, Linux's [`BUILD_BUG_ON_ZERO`](https://stackoverflow.com/questions/9229601/what-is-in-c-code) can be used as a similar static assertion mechanism. This is documented in [this Hacker News comment](https://news.ycombinator.com/item?id=22891575).
+
+A bit more involved than the previous methods, the `.incbin` assembler directive can be used. RPISEC has published [an awesome writuep](https://rpis.ec/blog/hxp-26c3-ctf-compilerbot/) which explores this method. The gist of their solution is to use `.incbin` to test different characters of the flag contents in one of the ELF header sections, causing a linkage error to be printed. A nice bonus of this technique is that variations of it can work with both Clang and GCC.
