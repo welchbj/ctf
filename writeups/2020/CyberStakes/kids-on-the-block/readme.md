@@ -9,7 +9,7 @@ It took me a while to get spun up and figure out how to script the required anal
 * A method of compiling the provided contract. I did this on the online [remix solidity compiler](https://remix.ethereum.org/).
 * A method of programmatically interacting with the local blockchain. While `geth` provides some native JavaScript bindings that are pretty good, I eventually graduated to using the [`web3.js`](https://web3js.readthedocs.io/en/v1.2.7/) node package due to the need for other utility JavaScript packages. Note that when using this package, you need to start `geth` with `geth --rpc --rpcapi="eth,web3,personal"`.
 * A method of decoding block input data into understandable metadata. I used the [`ethereum-input-data-decoder` node package](https://www.npmjs.com/package/ethereum-input-data-decoder) for this, which worked great.
-* Some baseline knowledge on how to process blocks and contracts. [This StackExchange questions](https://ethereum.stackexchange.com/questions/2531/common-useful-javascript-snippets-for-geth) is full of great examples. Most of my core solution code is based on snippets from these answers.
+* Some baseline knowledge on how to process blocks and contracts. [This StackExchange question](https://ethereum.stackexchange.com/questions/2531/common-useful-javascript-snippets-for-geth) is full of great examples. Most of my core solution code is based on snippets from these answers.
 * Not mandatory, but visually inspecting the graph through an [Epirus](https://github.com/blk-io/epirus-free) instance helped me better understand what was going on.
 
 ## Performing the Analysis
