@@ -10,11 +10,11 @@ We only require a cursory understanding of how zlib compression works in order t
 
 Because we control some of the data that follows the flag in the firmware string that gets compressed, if that data matches the flag, then those two identical strings will be collapsed into one record. This results in a shorter compressed length. Consequently, we can know if we have guessed the beginning of the flag correctly if we enter data that results in the same compressed length as having entered nothing at all.
 
-This problem is made a bit easier by the following:
+This challenge is made a bit easier by the following:
 
 * Due to the mode of operation, the length of the ciphertext will be identical to the length of the plaintext that it encrypted.
-* The server's compression error message tells us the exact length of our compressed plaintext, provided that it exceeds `229`.
-* The server is using `level=9` in its compression using the [Python `zlib` module](https://docs.python.org/3/library/zlib.html), which aggressively optimizes for compression size over performance. This exaggerates the reduced compressed length for any plaintexts that include several identical strings.
+* The server's compression error message tells us the exact length of our compressed plaintext, provided that it exceeds 229.
+* The server is using `level=9` in its use of [the Python `zlib` module](https://docs.python.org/3/library/zlib.html), which aggressively optimizes for compression size over performance. This exaggerates the reduced compressed length for any plaintexts that include several identical strings.
 
 We did gloss over some of the grittier details of zlib compression, and we can't make 100% accurate assumptions on whether our guess of the next flag character was correct solely based on whether the compressed length changed. This is due to a few factors, the predominant one being that parts of our incorrect guess might be collapsed with other non-flag parts of the plaintext that they match. To remedy this, I implemented my solution as a depth first search (DFS) of paths in the tree of guesses where the compressed length remains the same for each and every successive character guessed. This filters out all false positives which might pop up, as only the guess that matches the real flag will maintain the same compressed length through a full traversal to the bottom of the tree. This might be better understood with some sample output from the solution script (which is attempting to leak the sample flag `th1s_1s_A_Sampl3_flAg`):
 
