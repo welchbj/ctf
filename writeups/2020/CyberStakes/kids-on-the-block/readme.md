@@ -14,6 +14,6 @@ It took me a while to get spun up and figure out how to script the required anal
 
 ## Performing the Analysis
 
-Setting all of this up was the hard part and took a while, since I knew next to nothing about Ethereum previously. Once I could interact with the blockchain, the analysis was actually fairly straightforward. My strategy was to construct a graph of addresses, with edges representing transactions between blocks(weighted by the transaction value).
+Setting all of this up was the hard part and took a while, since I knew next to nothing about Ethereum previously. Once I could interact with the blockchain, the analysis was actually fairly straightforward. My strategy was to construct a graph of addresses, with edges representing transactions between blocks (weighted by the transaction value).
 
 Encoding typical to/from Ethereum transactions was pretty simple, but we also need to account for transactions that moved through instances of the provided [wallet contract](./wallet.sol). This just required some inspection of the block input arguments, and could be encoded naturally within the nodes and edges of our graph. Once the graph is constructed, following the money is just a matter of traversing from the start address through all edges that represent a logical fraction of the stolen money.
