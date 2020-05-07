@@ -8,4 +8,4 @@ The [challenge server](./messenger.py) is a messenger application that allows fo
 
 ## Exploitation
 
-Knowing how the server functions, it looks like we are going to have to perform a chosen ciphertext attack. However, we can only choose a ciphertext that is not precisely the flag ciphertext. Fortunately, [this StackExchange answer](https://crypto.stackexchange.com/a/2331) explains precisely the kind of attack that we need to perform. My [solve script](./solve.py) is a simple implementation of it.
+Knowing how the server functions, it looks like we are going to have to perform a chosen ciphertext attack. However, we can only choose a ciphertext that is not exactly the flag ciphertext. Fortunately, [this StackExchange answer](https://crypto.stackexchange.com/a/2331) explains precisely the kind of attack that we need to perform. My [solve script](./solve.py) is a simple implementation of it.

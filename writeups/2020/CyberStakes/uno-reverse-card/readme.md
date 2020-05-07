@@ -26,7 +26,7 @@ Knowing all of this, we can devise the following solution:
 
 * To avoid thinking too much, we'll create a minimal "reverse" shellcode that exits as soon as possible. This allows us to focus mainly on writing the "forward" shellcode, which is what we'll actually use to get the flag.
 * Since we just need the thread return value to be non-zero, our "reverse" shellcode only needs to consist of instructions that set the value in `[rdi+8]` to be non-zero and then call an `exit` syscall.
-* Since we know the flag is in the file `flag` (thanks to one of the problem hints), and that the beginning of the `mmap`ed pages eventually get dumped to `stdout` as long as the theads return okay, our "forward" shellcode only needs to consist of an `open`/`read` shellcode, which writes the contents of the `flag` file to the beginning of the `mmap`ed page that we are currently executing out of.
+* Since we know the flag is in the file `flag` (thanks to one of the problem hints), and that the beginning of the `mmap`ed pages eventually get dumped to `stdout` as long as the threads return okay, our "forward" shellcode only needs to consist of an `open`/`read` shellcode, which writes the contents of the `flag` file to the beginning of the `mmap`ed page that we are currently executing out of.
 * The "forward" shellcode can make use of the same clean exit shellcode that we crafted for the "reverse" shellcode.
 
 My [solve script](./solve.py) makes heavy use of the [`pwntools` shellcraft API](https://docs.pwntools.com/en/stable/shellcraft.html). I highly recommend becoming comfortable with it if you are not already.
