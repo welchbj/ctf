@@ -45,7 +45,7 @@ def cookie_injection(query):
 
 def main():
     with open('query.txt', 'r') as f:
-        queyr = f.read().strip()
+        query = f.read().strip()
     cookie_injection(query)
 
 
