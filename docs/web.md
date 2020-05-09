@@ -108,6 +108,10 @@ TODO: DOMpurify
 
 TODO: native browser APIs
 
+### Scroll to Text Fragment (STTF)
+
+[STTF](https://github.com/WICG/ScrollToTextFragment) is a browser feature that allows for automatic scrolling to certain text that might appear in a document (via the URL hash). The Chromium team has put together [a document discussing the security impliciations of STTF](https://docs.google.com/document/d/1YHcl1-vE_ZnZ0kL2almeikAj2gkwCq8_5xwIae7PVik/edit#heading=h.uoiwg23pt0tx). A complex challenge involving STTF was presented in [PlaidCTF 2020](https://dttw.tech/posts/B19RXWzYL).
+
 ### JavaScript Utilities
 
 This section covers some basic utilities provided in the major browsers' native runtimes.
