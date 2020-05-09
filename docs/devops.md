@@ -76,3 +76,22 @@ There are seemingly endless insanely high quality third-party libraries availabl
 ### Golang
 
 I haven't started writing any tools in [Go](https://golang.org/), but I'm starting to see it be a requirement for building a lot of new open source utilities. I have run into issues in the past with setting up an appropriate version / environment variable configuration. [This StackOverflow answer](https://stackoverflow.com/a/41323785) has solved all of my problems.
+
+## Tools
+
+### Metasploit
+
+Sometimes, it's nice to have [Metasploit](https://www.metasploit.com/) installed on a VPS. These steps work on Ubuntu (based on instructions [here](https://computingforgeeks.com/how-to-install-metasploit-framework-on-ubuntu-18-04-debian-9/)):
+
+```sh
+# Run installation script.
+curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/config/templates/metasploit-framework-wrappers/msfupdate.erb > msfinstall
+chmod +x msfinstall
+./msfinstall
+
+# Setup database.
+msfdb init
+
+# Run it.
+msfconsole
+```
