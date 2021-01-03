@@ -2,7 +2,38 @@
 
 This page covers tips and tricks for making the most of injections into vulnerable applications, whether that be TODO or bypassing character blacklists.
 
-## Structed Query Language (SQL)
+## DNS / IP
+
+Sometimes you can control a hostname or IP address to which some kind of request is sent. Perhaps need to bypass some filter, with limited characters or blocklisted strings.
+
+A great explanation of some of the wonky IP address parsing behavior that exists can be found [in this article](https://blog.dave.tf/post/ip-addr-parsing/). Some general tips:
+
+* Octets can be encoded in hex and (sometimes) octal.
+* IPv4 addresses can be interpreted as unsigned integers.
+* `::` and implicit zero digits in IPv6 lead to lots of really weird behavior.
+
+As a quick reference, the following addresses are sometimes treated equivalently to `0.0.0.0` or `127.0.0.1`:
+
+* `0x7f.0.0.1` == `0x7f.0.0.0x1` == `127.0.0.1`
+* `2130706433` == `0x7f000001` == `127.0.0.1`
+* `0` == `0x0` == `0.0.0.0`
+
+To generate the packed decimal and hex forms of an IPv4 address, the following Python snippet may come in handy:
+
+```python
+>>> ip = "127.0.0.1"
+>>> o = [int(x) for x in ip.split(".")]; (o[0]<<24)+(o[1]<<16)+(o[2]<<8)+(o[3]<<0)
+2130706433
+>>> hex(_)
+'0x7f000001'
+```
+
+If a DNS name is needed instead of an IP address, then the following are good options:
+
+* [xip.io](http://xip.io/): Create domains that resolve to desired IP addresses (e.g., `1.2.3.4.xip.io` == `1.2.3.4`)
+* `localtest.me`: Hostname that resolves to `127.0.0.1`.
+
+## Structured Query Language (SQL)
 
 ### General Resources
 
