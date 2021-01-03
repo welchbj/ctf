@@ -9,7 +9,7 @@ The gist of the challenge / solution flow is:
 * I think a font-ligature attack with scrollbar side channel MIGHT be possible but... I didn't feel like generating all of the WOFF fonts
 * It is possible to use CSS animations + CSS variables + regex selectors to leak all three-character sub-sets of the admin's 64 character token (this length could be more without the 500kb CSS file upload size limit)
 
-I took this opportunity to brush up on server/client writing with [`aiohttp`](https://aiohttp.readthedocs.io/en/stable/). The rough [solve script](./solve.py) that I wrote after the competition is included in this directory, as well as the [solution CSS payload](./author-sgn.css) that the [author of the challenge](https://twitter.com/terjanq) created.
+I took this opportunity to brush up on server/client writing with [`aiohttp`](https://aiohttp.readthedocs.io/en/stable/). The rough [solve script](./solve.py) that I wrote after the competition is included in this directory.
 
 Some great resources I read over while working on this:
 
