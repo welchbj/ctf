@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Probbaly not the intended solution.
+Probably not the intended solution.
 
 Uses limited stack overflow to control rbp, causing the program's last read()
 of 0x18 bytes to write into a controlled address. Due to the lack of RELRO and
