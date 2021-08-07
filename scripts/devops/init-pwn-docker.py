@@ -21,6 +21,7 @@ _libc_to_ubuntu_map = {
     "2.23": "16.04",
     "2.27": "18.04",
     "2.31": "20.04",
+    "2.32": "20.10",
 }
 
 # XXX: Check arch of binary and install appropriate qemu + friends?
@@ -95,6 +96,7 @@ def gen_dockerfile(ctx):
     write("RUN apt-get update")
     apt_get("build-essential gdb git")
     apt_get("curl tmux vim wget")
+    apt_get("sudo")
     apt_get(" ".join([
         "zlib1g-dev",
         "libbz2-dev",
@@ -115,6 +117,7 @@ def gen_dockerfile(ctx):
     write("""\
        RUN useradd --create-home --shell /bin/bash ctf 
        RUN echo "ctf:ctf" | chpasswd
+       RUN adduser ctf sudo
        USER ctf""")
 
     # Install GEF + extras.
@@ -179,7 +182,7 @@ def main():
     elf = context.binary
 
     # XXX: need to derive below two items from challenge files / arguments
-    ubuntu_version = "16.04"
+    ubuntu_version = "21.04"
     libc_path = None
 
     ctx = DockerContext(
