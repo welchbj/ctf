@@ -32,9 +32,6 @@ if args.GDB:
 def menu(choice):
     io.sendlineafter(">> ", str(choice))
 
-def send_index(idx):
-    io.sendlineafter("Challenge number: ", str(idx))
-
 def pad(original, new_len, pad_char):
     assert new_len >= len(original)
     return original + (new_len - len(original)) * pad_char
