@@ -1,0 +1,7 @@
+data/
+lib/
+
+*.bak
+*.o
+*.so
+*.tar
