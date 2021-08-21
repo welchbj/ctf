@@ -1,0 +1,12 @@
+exit
+exit_group
+gettimeofday
+mmap
+mprotect
+munmap
+process_vm_readv
+process_vm_writev
+read
+reboot
+timerfd_create
+write
