@@ -96,6 +96,8 @@ class Const:
     process_read_err = "pread err"
     process_write_err = "pwrite err"
 
+    # CDS leads to RWX segment at static address, more context here:
+    # https://docs.oracle.com/javase/8/docs/technotes/guides/vm/class-data-sharing.html
     cds_rwx_base = 0x800000000
     cds_len_to_read = 1
     cds_rwx_size = 0x2000
