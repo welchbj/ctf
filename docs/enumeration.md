@@ -296,7 +296,7 @@ TODO
 
 ### Powershell Empire
 
-TODO
+Useful cheatsheet can be found [here](https://github.com/HarmJ0y/CheatSheets/blob/master/Empire.pdf).
 
 ### Pillaging Credentials
 
