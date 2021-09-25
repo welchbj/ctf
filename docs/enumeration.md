@@ -11,11 +11,6 @@ Nmap snippets for initial enumeration and situational awareness (`-sT` used for 
 ```sh
 export HOST=scanme.nmap.org
 
-If you choose not to see the light, these Nmap snippets will prove useful (`-sT` used for speed; in real-life scenarios, use TCP SYN scanning with `-sS`):
-
-```sh
-export HOST=scanme.nmap.org
-
 # Quick TCP port scan on common ports.
 nmap -vv -n -Pn -sT -sV -sC --top-ports 1000 -oN $'nmap.tcp.quick.'${HOST}$'.'$(date -Iseconds) $HOST
 
