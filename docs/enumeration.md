@@ -6,14 +6,10 @@ Useful host enumeration snippets for boot2root-style CTFs.
 
 ### Port Scans
 
-Usually the best first step is to run some port scans, at least on the common ports.
-
-Shameless plug, to automate all of your initial recon needs, check out my project [bscan](https://github.com/welchbj/bscan):
+Nmap snippets for initial enumeration and situational awareness (`-sT` used for speed; in real-life scenarios, use TCP SYN scanning with `-sS`):
 
 ```sh
 export HOST=scanme.nmap.org
-/opt/bscan --max-concurrency 5 $HOST
-```
 
 If you choose not to see the light, these Nmap snippets will prove useful (`-sT` used for speed; in real-life scenarios, use TCP SYN scanning with `-sS`):
 
