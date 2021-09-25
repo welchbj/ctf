@@ -188,8 +188,10 @@ TODO
 
 ### PNG File Format
 
-TODO: [Deep dive into PNG spec](https://www.w3.org/TR/PNG-Structure.html)
-TODO: [PNG chunks](http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html)
+PNG file format reference documents:
+
+* [Deep dive into PNG spec](https://www.w3.org/TR/PNG-Structure.html)
+* [PNG chunks](http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html)
 
 ### LSB Steganography
 

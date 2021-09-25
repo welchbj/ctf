@@ -24,13 +24,7 @@ If you see UDP traffic to port 8443, this should be a give away for [QUIC](https
 
 ## Client-side
 
-### Document Object Model (DOM)
-
-TODO
-
 #### DOM Clobbering
-
-TODO
 
 Excellent resources (with many good examples) on this topic include:
 
@@ -52,7 +46,7 @@ TODO
 
 ### Dangling Markup Exfiltration
 
-TODO: http://lcamtuf.coredump.cx/postxss/
+lcamtuf has a great writeup on this topic [here](http://lcamtuf.coredump.cx/postxss/).
 
 ### CSS Exfiltration
 
@@ -79,30 +73,6 @@ For more structued analysis, [Wasabi](http://wasabi.software-lab.org/) is the ki
 #### Portable Native Client (PNaCl)
 
 [Portable Native Client](https://en.wikipedia.org/wiki/Google_Native_Client) was an attempt at binary client-side code before WebAssembly. Its security implications are explored in [this article](https://web.archive.org/web/20200308133606/https://shhnjk.blogspot.com/2019/07/intro-to-chromes-gold-features.html?m=1).
-
-### Cookies
-
-#### SameSite Cookies
-
-TODO: https://web.dev/samesite-cookies-explained/
-
-TODO: https://medium.com/@renwa/bypass-samesite-cookies-default-to-lax-and-get-csrf-343ba09b9f2b
-
-### Interesting HTML Elements
-
-TODO: https://research.securitum.com/security-analysis-of-portal-element/
-
-### Cross-Site Scripting (XSS)
-
-TODO
-
-This section only covered some of the basics of XSS; techniques from the below sections can be used in tandem with this information to create solutions for more complex environments.
-
-#### XSS Sanitization
-
-TODO: DOMpurify
-
-TODO: native browser APIs
 
 ### Scroll to Text Fragment (STTF)
 
@@ -175,7 +145,7 @@ For [`import`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference
 
 ### Browser JS Runtime Quirks
 
-TODO: hoisting -- https://developer.mozilla.org/en-US/docs/Glossary/Hoisting
+The concept of hoisting is explained well [here](https://developer.mozilla.org/en-US/docs/Glossary/Hoisting)
 
 ### Content Security Policy (CSP)
 
@@ -291,10 +261,6 @@ TODO: https://mohemiv.com/all/exploiting-xxe-with-local-dtd-files/
 TODO: leaking file contents from errors that report file name (https://www.youtube.com/watch?v=0fdpFQXWVu4)
 
 ### JavaScript Web Tokens (JWT)
-
-#### Overview
-
-TODO
 
 #### JWTS
 

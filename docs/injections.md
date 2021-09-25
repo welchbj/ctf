@@ -1,6 +1,6 @@
 # Injections
 
-This page covers tips and tricks for making the most of injections into vulnerable applications, whether that be TODO or bypassing character blacklists.
+This page covers tips and tricks for making the most of injections into vulnerable applications.
 
 ## DNS / IP
 

@@ -46,7 +46,6 @@ This process is explained at a high level in [this StackOverflow answer](https:/
 * [vscode-icons](https://github.com/vscode-icons/vscode-icons) - Nice sidebar file icons.
 * [CodeSnap](https://github.com/kufii/CodeSnap) - Sweet code screenshots.
 * [Fira Code](https://github.com/tonsky/FiraCode) - Font with programming ligatures.
-* [Todo Tree](https://github.com/Gruntfuggly/todo-tree) - Tree view of TODO/FIXME/XXX/etc. comments in your code.
 
 ### Vim
 

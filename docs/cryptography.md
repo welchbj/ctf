@@ -74,31 +74,9 @@ An online interface like factordb, [Alpertron's calculator](https://www.alpertro
 
 #### Factorization Attacks
 
-The [FactHacks website](https://facthacks.cr.yp.to/index.html) and [accompanying 29C3 talk](https://fahrplan.events.ccc.de/congress/2012/Fahrplan/events/5275.en.html) discuss real-world attacks on RSA factorization. Some of the attacks they detail:
-
-* TODO
-* TODO
-* TODO
+The [FactHacks website](https://facthacks.cr.yp.to/index.html) and [accompanying 29C3 talk](https://fahrplan.events.ccc.de/congress/2012/Fahrplan/events/5275.en.html) discuss real-world attacks on RSA factorization.
 
 Their site has extensive Sage examples for all attacks mentioned and is a great reference.
-
-### Types of Attacks
-
-#### Modulus Re-use
-
-TODO
-
-#### Hastad's Broadcast Attack
-
-TODO
-
-#### Franklin-Reiter related-message attack
-
-TODO
-
-#### Coppersmith's Short-pad Attack
-
-TODO
 
 ### Applications of Number Theory
 
@@ -117,10 +95,6 @@ Some potential attacks include:
 * Chosen plaintext attack: Find great explanations in the answers to [this StackOverflow question](https://crypto.stackexchange.com/questions/42891/chosen-plaintext-attack-on-aes-in-ecb-mode).
 * ECB cut-and-paste: Since the same plaintext will always produce the same ciphertext, you can re-order encrypted blocks to forge messages. This is well-explained within solutions to the [Cryptopals problem of the same name](https://cryptopals.com/sets/2/challenges/13).
 
-### Cipher Block Chaining (CBC)
-
-TODO
-
 ### Galois/Counter Mode (GCM)
 
 [GCM](https://en.wikipedia.org/wiki/Galois/Counter_Mode) mode of operation provides authentication (i.e., integrity) in addition to encryption (i.e., confidentiality).
@@ -129,6 +103,10 @@ Some potential pitfalls and opportunities for attack include:
 
 * The Forbidden Attack: Nonce reuse is always bad, but it also allows for authenticity tag forgery for some problem setups. This is explored in [this ctf writeup](https://web.archive.org/web/20190117114407/http://blog.redrocket.club/2018/03/27/VolgaCTF-Forbidden/) and [accompanying solve script](https://web.archive.org/web/20200308130642/https://gist.github.com/rugo/c158f595653a469c6461e26a60b787bb).
 * Applications to TLS: [This paper](https://eprint.iacr.org/2016/475.pdf) and [this ctf writeup](https://web.archive.org/web/20190117114407/http://blog.redrocket.club/2018/03/27/VolgaCTF-Forbidden/) explore the weaknesses and implications of nonce-reuse within TLS implementations.
+
+### Cipher Block Chaining (CBC)
+
+Along with GCM, considered a secure mode of AES. Challenges may involve partially-known IVs, CTs, or PTs.
 
 ## Hash Length Extension Attacks
 

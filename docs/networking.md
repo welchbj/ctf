@@ -16,6 +16,10 @@ TODO: normal ssh portforwards
 
 TODO
 
+### UDP Redirection
+
+TODO: https://blog.cobaltstrike.com/2021/03/11/simple-dns-redirectors-for-cobalt-strike/
+
 ### Reverse SOCKS Proxying
 
 TODO: OpenSSH 7.6+ `ssh -R`

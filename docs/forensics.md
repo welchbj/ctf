@@ -8,7 +8,7 @@ Querying for information on a Windows box can be annoying. An excellent general 
 
 ### Searching Files and Permissions
 
-```posh
+```powershell
 # List hidden files; -Force shows all files (including hidden).
 Get-ChildItem -Force
 Get-ChildItem -Hidden
@@ -21,7 +21,7 @@ Get-Item file.txt -Stream *
 dir /s needle
 Get-ChildItem -Path C:\*needle* -Recurse -ErrorAction SilentlyContinue -Force
 
-# Native and Posh options for recursive search of file contents.
+# Native and PowerShell options for recursive search of file contents.
 findstr /s needle *
 Get-ChildItem -Path C:\ -Filter *needle* -Recurse -ErrorAction SilentlyContinue -Force
 
@@ -38,7 +38,7 @@ The below groups of snippets make use of both PowerShell and native system binar
 
 #### SID-related Queries
 
-```posh
+```powershell
 # Get SIDs of all local users.
 Get-LocalUser | Select-Object SID
 
@@ -58,7 +58,7 @@ wmic useraccount where sid='<SID>' get name
 
 #### Process Querying
 
-```posh
+```powershell
 # Dump data from all running processes.
 Get-CimInstance Win32_Process | Format-List *
 
@@ -75,7 +75,7 @@ Get-Process -ID <PID> | Select-Object *
 
 #### Service and Scheduled Task Querying
 
-```posh
+```powershell
 # Get formatted list of services.
 Get-Service | Where Status -eq 'Running' | Out-GridView
 Get-Service | Where-Object {$_.Status -eq 'Running'} | Out-File -filepath .\running-services.txt
@@ -134,7 +134,8 @@ There are a few ways to query the event logs. If you have access to the Windows 
 `Get-EventLog` is a nice tool for pulling back event information from the local computer, but does not have any functionality for filtering results on remote computers before pulling them pack for local filtering with `Where-Object`.
 
 `Get-WinEvent` allows for filtering of events before pulling them back from other systems. Below are some useful `Get-WinEvent` snippets:
-```posh
+
+```powershell
 # Limit the number of returned events.
 Get-WinExent -MaxEvents 1
 
@@ -228,6 +229,8 @@ I've found the [FTK Imager tool](https://marketing.accessdata.com/ftkimager4.2.0
 
 [Volatility](https://github.com/volatilityfoundation/volatility) is a tool for analyzing RAM dumps from a variety of operating systems. Below are some useful snippets:
 
+TODO: comprehensive list of scans with pros/cons
+
 ```sh
 export DUMP=./memory.vmem
 
@@ -254,6 +257,10 @@ volatility -f $DUMP --profile=Win7SP0x64 iehistory
 ```
 
 The best practical applications of Volatility I've seen come from [Andrea Fortuna's website](https://www.andreafortuna.org/). [Here](https://www.andreafortuna.org/2018/03/02/volatility-tips-extract-text-typed-in-a-notepad-window-from-a-windows-memory-dump/) is an example of extracting strings written within a notepad process.
+
+## iOS Forensics
+
+TODO
 
 ## Application Forensics
 

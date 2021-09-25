@@ -40,30 +40,25 @@ objdump -R ./program
 
 ### "Tracing" via GDB Scripts
 
-TODO: https://stackoverflow.com/questions/58851/can-i-set-a-breakpoint-on-memory-access-in-gdb
+GDB scripts can be a useful tool for dynamic tracing, . Some useful resources in this vein:
 
-TODO: https://spotless.tech/utctf-ctf-2020-Crack_the_heart.html
-
-TODO: https://stackoverflow.com/questions/10748501/what-are-the-best-ways-to-automate-a-gdb-debugging-session
+* [StackOverflow: Breakpoints on memory accesses in GDB](https://stackoverflow.com/questions/58851/can-i-set-a-breakpoint-on-memory-access-in-gdb)
+* [StackOverflow: GDB scripting examples to automate debugging](https://stackoverflow.com/questions/10748501/what-are-the-best-ways-to-automate-a-gdb-debugging-session)
+* [Crack the Heart writeup from UTCTF 2020](https://spotless.tech/utctf-ctf-2020-Crack_the_heart.html)
 
 ### Linux - eBPFs and `bpftrace`
 
 It turns out that Linux Kernel performance-tracing tools are also great for tracing CTF problem binaries. Some awesome introductory articles to Linux tracing through the lense of performance engineering include:
 
-* TODO: https://netflixtechblog.com/linux-performance-analysis-in-60-000-milliseconds-accc10403c55
-* TODO: http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html
+* [Netflix: Linux Performance Analysis in 60,000 Milliseconds](https://netflixtechblog.com/linux-performance-analysis-in-60-000-milliseconds-accc10403c55)
+* [Choosing a Linux Tracer (2015)](http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-tracer.html)
 
-TODO: https://github.com/iovisor/bcc
+And useful tools:
 
-TODO: https://github.com/iovisor/bpftrace
+* [`bcc`](https://github.com/iovisor/bcc)
+* [`bpftrace`](https://github.com/iovisor/bpftrace)
 
 ### `strace`
-
-#### `strace` Pitfalls
-
-TODO
-
-#### `strace` Snippets
 
 System calls can be traced and manipulated with the command-line program `strace`. Below are some useful snippets for reverse engineering challenges:
 
@@ -122,15 +117,6 @@ strace -z ./program
 
 # injecting syscalls to bypass anti-debugging (in this case, ptrace)
 strace -e inject=ptrace:retval=0 ./program
-```
-
-### `ltrace`
-
-Library calls can be traced with the command-line program `ltrace`. Below are some useful snippets:
-
-```sh
-# TODO
-TODO
 ```
 
 ### Statement-level Tracing

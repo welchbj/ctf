@@ -232,9 +232,9 @@ It offers more fine-grained control for data manipulation than Wireshark or `tsh
 
 from scapy.all import *
 
-packets = rdpcap('the.pcap')
+packets = rdpcap("the.pcap")
 
-with open('out.raw', 'wb') as f:
+with open("out.raw", "wb") as f:
     for p in packets:
         if UDP in p:
             chunk = bytes(p[Raw])
