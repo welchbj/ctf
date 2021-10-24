@@ -302,6 +302,23 @@ for i in {1..254}; do (ping $SUBNET.$i -c 1 -w 5  >/dev/null && echo "$SUBNET.$i
 
 ## Windows Pivoting/Tooling
 
+### File System Enumeration
+
+To find files by their modification date, you can use filters like `datemodified:last week` or `datemodified:yesterday` in File Explorer.
+
+Recursively searching for needle strings in files can be done in PowerShell:
+
+```powershell
+# Get files that contain the needle string.
+Get-ChildItem -Recurse | Select-String "needle" -List | Select Path
+```
+
+And from a native `cmd.exe` shell (as explained [here](https://stackoverflow.com/a/699283)):
+
+```bat
+findstr /spin /c:"needle" [files]
+```
+
 ### Interacting with Native Protocols
 
 #### SMB
@@ -589,7 +606,17 @@ POC is available [here](https://github.com/bb00/zer0dump).
 
 ### File System Enumeration
 
-TODO
+Find the most recently changed files on the file system (alternative methods discussed [here](https://stackoverflow.com/a/7448828)):
+
+```sh
+find /start-directory -type f -print0 | xargs -0 stat --format '%Y :%y %n' | sort -nr | cut -d: -f2-
+```
+
+Find files affected by ACLs (as explained [here](https://superuser.com/questions/398448/find-files-with-acls-set)):
+
+```sh
+getfacl -R -s -p /directory | sed -n 's/^# file: //p'
+```
 
 ## Bruteforcing and Spraying Creds
 
