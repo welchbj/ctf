@@ -520,11 +520,13 @@ The following Impacket scripts also provide useful remote query capabilities (so
 
 TODO
 
-### Active Directory Enumeration
+### Active Directory
 
-TODO
+Some nice overview resources include:
 
-### Kerbeos
+* [The DFIR Report - From Zero to Domain Admin](https://thedfirreport.com/2021/11/01/from-zero-to-domain-admin/)
+
+#### Kerberos
 
 TODO
 

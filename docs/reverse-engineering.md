@@ -127,6 +127,12 @@ Sometimes you have to go deeper. This may involve tracing a binary's execution a
 
 [Frida](https://frida.re/) is a powerful dynamic instrumentation framework. [Here](https://sectt.github.io/writeups/Volga20/f-hash/README) is an example of a CTF writeup that uses Frida to memoize the result of an expensive recursive function.
 
+## Non-C/C++ Languages
+
+### Rust
+
+[This blog post](https://www.cyberark.com/resources/threat-research-blog/fickerstealer-a-new-rust-player-in-the-market) discusses reversing a real-life secret-pillaging malware variant written in Rust.
+
 ## File Systems
 
 ### FAT32
