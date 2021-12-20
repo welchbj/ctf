@@ -634,6 +634,18 @@ Find files affected by ACLs (as explained [here](https://superuser.com/questions
 getfacl -R -s -p /directory | sed -n 's/^# file: //p'
 ```
 
+## Cracking Hashes
+
+### Hashcat
+
+See [Hashcat example hashes page](https://hashcat.net/wiki/doku.php?id=example_hashes).
+
+Hashcat example for breaking md5crypt with a wordlist:
+
+```sh
+hashcat -m 500 -a 0 hash.lst /usr/share/wordlists/rockyou.txt
+```
+
 ## Bruteforcing and Spraying Creds
 
 ### Bruteforcing
