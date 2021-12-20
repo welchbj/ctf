@@ -130,7 +130,13 @@ You can go a lot of ways with Python sandbox escaping. Here are some good writeu
 * [This survey of solutions to a DiceCTF 2021 challenge](https://kmh.zone/blog/2021/02/07/ti1337-plus-ce/), which mostly had to do with bytecode techniques. Also see [this writeup](https://github.com/justcatthefish/ctf-writeups/tree/master/2021-02-08-DiceCTF/ti1337-plusce) for an unintended solution that involved overwriting `displayhook` in the `sys` module's namespace.
 * The infamous [`LOAD_CONST`](https://doar-e.github.io/blog/2014/04/17/deep-dive-into-pythons-vm-story-of-load_const-bug/) bug/feature. Also see [this writeup](https://www.da.vidbuchanan.co.uk/blog/35c3ctf-collection-writeup.html) on the same topic.
 
-Also of note is that shared objects can be imported as Python . If you can write to disk, take a look at [this blog post](https://starfleetcadet75.github.io/posts/plaid-2020-golf-so/) for writing small ELF shared objects.
+A sub-genre of Python sandbox escapes involves bypassing the [audit hook functionality](TODO) introduced in TODO, covered in the following challenges/writeups:
+
+* [0CTF/TCTF qualifiers 2020 - PyAuCalc](https://flagbot.ch/posts/pyaucalc/): Abuses the fact that Python "destructors" used to be called after all audit hooks had been removed when the interpreter is preparing for exit.
+* [audited from HXP CTF 2020](https://github.com/fab1ano/hxp-ctf-20/blob/main/audited/README.md): Uses creative ways of importing modules without triggering import audit events.
+* [audited2 from HXP CTF 2021](https://ctftime.org/writeup/31883): Similar to the above, also includes use of the not-so-well-known `_posixsubprocess` native module in the Python standard library.
+
+Also of note is that shared objects can be imported directly as Python modules. If you can write to disk, take a look at [this blog post](https://starfleetcadet75.github.io/posts/plaid-2020-golf-so/) for writing small ELF shared objects.
 
 ### Bypassing Character Filters
 
