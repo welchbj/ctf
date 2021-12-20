@@ -302,10 +302,10 @@ Get-ScheduledTask | format-table TaskName, TaskPath, Description
 
 ```powershell
 # Enumerate all services with their program name and arguments displayed.
-get-wmiobject win32_service | format-list Name, Description, PathName
+Get-WmiObject win32_service | Format-List Name, Description, PathName
 
 # Look at a specific service.
-get-wmiobject win32_service | where-object {$_.Name -eq 'Schedule'} | format-list Name, Description, PathName
+Get-WmiObject win32_service | Where-Object {$_.Name -eq 'Schedule'} | Format-List Name, Description, PathName
 ```
 
 ### Interacting with Native Protocols
