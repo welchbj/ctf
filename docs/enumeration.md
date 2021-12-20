@@ -532,6 +532,41 @@ The following Impacket scripts also provide useful remote query capabilities (so
 * [`smbrelayx.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/smbrelayx.py)
 * [`services.py`](https://github.com/SecureAuthCorp/impacket/blob/master/examples/services.py)
 
+### Forced Authentication
+
+You can make a variety of Windows applications authenticate to you, leaking information such as username and Net-NTLM hashes. The go-to tools for such endeavors include [Responder](https://github.com/lgandx/Responder) (from Linux attack machines) and [Inveigh](https://github.com/Kevin-Robertson/Inveigh) (from Windows attack machines).
+
+For a nice reference of payload files and catching authentication attempts with Responder, see [this `ired.team` page](https://www.ired.team/offensive-security/initial-access/t1187-forced-authentication).
+
+#### Cracking Net-NTLM Hashes
+
+Because the leaked hashes are Net-NTLM hashes (as opposed to NTLM; read [here](https://medium.com/@petergombos/lm-ntlm-net-ntlmv2-oh-my-a9b235c58ed4) for an explanation on the differences), they cannot be used directly in pass-the-hash techniques. However, the original underlying password can be bruteforced:
+
+```sh
+hashcat -m 5600 -a 0 hash.txt /usr/share/wordlists/rockyou.txt
+```
+
+#### Relaying Hashes
+
+In the event the leaked hashes cannot be cracked, they can still be relayed to achieve code execution on other hosts on the domain (provided that [SMB signing](https://docs.microsoft.com/en-us/troubleshoot/windows-server/networking/overview-server-message-block-signing) is disabled). Some details of the underlying mechanics behind SMB relaying are discuseed in the 2015 BlackHat talk [SMB: Sharing More Than Just Your Files](https://www.blackhat.com/docs/us-15/materials/us-15-Brossard-SMBv2-Sharing-More-Than-Just-Your-Files.pdf).
+
+A nice practical guide can be found in byt3bl33d3r's [Practical guide to NTLM Relaying in 2017 ](https://byt3bl33d3r.github.io/practical-guide-to-ntlm-relaying-in-2017-aka-getting-a-foothold-in-under-5-minutes.html).
+
+Because SMB signing must be disabled for relaying to work, the first step is to check if the target host has it enabled:
+
+```sh
+# Check a single host.
+crackmapexec smb 10.10.10.0
+
+# Check an entire subnet and record results in a file.
+crackmapexec smb --gen-relay-list ./relayable-hosts.txt 10.10.10.0/24
+
+# Alternatively, use Responder's RunFinger.py.
+responder-RunFinger -i 10.10.10.0/24
+```
+
+TODO: Pairing ntlmrelayx with Responder.
+
 ### Kerberos
 
 TODO
