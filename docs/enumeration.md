@@ -71,6 +71,12 @@ gobuster dir --useragent 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/
 
 Don't forget to add `-x php,xhtml`-style arguments based on any determined common file extensions.
 
+Alternatively, `wfuzz` should be available natively on Kali:
+
+```sh
+wfuzz -c -z file,/usr/share/dirb/wordlists/common.txt --hc 404 $URL/FUZZ.php
+```
+
 If you just want to look for some quick-and-easy wins, this `curl` snippet will get you started:
 
 ```sh
