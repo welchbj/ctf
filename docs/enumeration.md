@@ -229,6 +229,18 @@ set Powershell::prepend_protections_bypass false
 run
 ```
 
+### Authenticated Windows Code Execution Modules
+
+With credentials (or an NTLM hash), the following modules can be used to execute meterpreter payloads on targets (see [here](https://www.infosecmatter.com/rce-on-windows-from-linux-part-5-metasploit-framework/) for a good reference):
+
+```
+use auxiliary/admin/smb/psexec_command
+use exploit/windows/smb/psexec_psh
+use exploit/windows/smb/psexec
+use auxiliary/scanner/smb/impacket/dcomexec
+use auxiliary/scanner/smb/impacket/wmiexec
+```
+
 ## Windows Local Enumeration and Pivoting
 
 ### File System Enumeration
