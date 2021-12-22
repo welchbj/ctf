@@ -267,3 +267,11 @@ TODO
 ### Keybase
 
 The best research I've seen on Keybase encrypted chat forensics can be found [here](https://hatsoffsecurity.com/2020/02/23/keybase-io-forensics-investigation/).
+
+## Git Repositories
+
+Looking at the changes that occured between `HEAD` and specific hash:
+
+```sh
+git show deadbeef
+```
