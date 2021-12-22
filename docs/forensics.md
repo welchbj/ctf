@@ -258,6 +258,18 @@ volatility -f $DUMP --profile=Win7SP0x64 iehistory
 
 The best practical applications of Volatility I've seen come from [Andrea Fortuna's website](https://www.andreafortuna.org/). [Here](https://www.andreafortuna.org/2018/03/02/volatility-tips-extract-text-typed-in-a-notepad-window-from-a-windows-memory-dump/) is an example of extracting strings written within a notepad process.
 
+### Recovering "Live" Memory from `hiberfil.sys` on Windows
+
+In order to support hibernation mode, Windows maintains a `hiberfil.sys` file. This file can be translated into a format accepted by Volatility and other memory analysis tools. This file must typically be carved from a disk image like FTK Imager or Autopsy.
+
+Tools like [Arsenal Recon's offering](https://arsenalrecon.com/2018/02/windows-hibernation-infographic/) can extract relevant data from these files. Volatility's `imagecopy` plugin also supports translating `hiberfil.sys` files:
+
+```sh
+volatility imagecopy -f hiberfil.sys -O hiber_dump.img --profile=Win7SP0x64
+```
+
+Useful resources include [Andrea Fortuna's post on the topic](https://www.andreafortuna.org/2019/05/15/how-to-read-windows-hibernation-file-hiberfil-sys-to-extract-forensic-data/) and [Windows Hibernation File for Fun and Profit](https://www.blackhat.com/presentations/bh-usa-08/Suiche/BH_US_08_Suiche_Windows_hibernation.pdf).
+
 ## iOS Forensics
 
 TODO
