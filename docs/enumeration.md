@@ -120,6 +120,14 @@ wfuzz -c -z file,/opt/fuzzdb/wordlists-user-passwd/names/namelist.txt -z file,/o
 wfuzz -c -z file,/opt/fuzzdb/attack/http-protocol/http-protocol-methods.txt -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -X FUZZ --hc 403 $URL
 ```
 
+#### Vhost and Subdomain Enumeration
+
+Fuzzing vhost routing and web server subdomains with `wfuzz` (below example hides pages of length `1337` to look for anomalous responses):
+
+```sh
+wfuzz -c -z file,/usr/share/wordlists/wfuzz/general/big.txt -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -H 'Host: FUZZ.target.tld' --hl 1337 $URL
+```
+
 ## Local Host Enumeration
 
 This section goes over some automated methods. For manual checks, take a look at [my other pentesting snippet reference](https://pages.brianwel.ch/hacks).
@@ -263,6 +271,7 @@ findstr /spin /c:"needle" [files]
 Listing files in typical locations of interest:
 
 ```powershell
+TODO: %TEMP% folders for all users
 (Get-ChildItem -Recurse -Path \Windows\Temp).fullname
 (Get-ChildItem -Recurse -Path \Users\*\Desktop).fullname
 (Get-ChildItem -Recurse -Path \Users\*\Documents).fullname
