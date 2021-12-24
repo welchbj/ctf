@@ -81,6 +81,10 @@ sqlmap -r recorded-request.req --batch --tamper path/to/my/tamper/script.py
 
 With some blind injections, the only method of exfiltrating data is out of band. Out of band means via a channel not in the synchronous communication that generated the SQL query, so think external network communications like DNS. A great resource for Postgres techniques is covered in [this writeup of the fbctf 2019 challenge hr_admin_module](https://github.com/PDKT-Team/ctf/blob/master/fbctf2019/hr-admin-module/README.md).
 
+### SQLite Injections
+
+Example of a challenge that upgraded a SQLite injection in a PHP application to code execution can be found [here](https://github.com/cscosu/ctf-writeups/tree/master/2021/hxp_ctf/shitty-blog)
+
 ## Bash
 
 Bash is an interesting target for injection challenges because there are so many little-known and arcane features scattered throughout it. This section aims to document some potentially useful techniques.
@@ -141,6 +145,12 @@ Also of note is that shared objects can be imported directly as Python modules. 
 ### Bypassing Character Filters
 
 For Flask/Jinja SSTI problems, if `_` is blacklisted then a pretty generic gadget for it is `g.get|string|slice(4)|first|last`. A great overall reference for Flask/Jinja SSTI can be found [here](https://web.archive.org/web/20200217202837/https://pequalsnp-team.github.io/cheatsheet/flask-jinja2-ssti).
+
+## PHP
+
+### Stream Wrappers
+
+See [unzipper from HXP CTF 2021](https://github.com/cscosu/ctf-writeups/tree/master/2021/hxp_ctf/unzipper) for a challenge that involves abuses symlinks and `file://` protocol ambiguities from PHP. The gist of the solution is that PHP's [`realpath`](https://www.php.net/manual/en/function.realpath.php) will resolve `file:///var/www/html/data/leak.lnk` to `file:/var/www/html/data/leak.lnk`.
 
 ## JavaScript
 
