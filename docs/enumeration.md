@@ -271,8 +271,8 @@ findstr /spin /c:"needle" [files]
 Listing files in typical locations of interest:
 
 ```powershell
-TODO: %TEMP% folders for all users
 (Get-ChildItem -Recurse -Path \Windows\Temp).fullname
+(Get-ChildItem -Recurse -Path \Users\*\AppData\Local\Temp).fullname
 (Get-ChildItem -Recurse -Path \Users\*\Desktop).fullname
 (Get-ChildItem -Recurse -Path \Users\*\Documents).fullname
 
