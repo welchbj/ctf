@@ -152,6 +152,10 @@ For Flask/Jinja SSTI problems, if `_` is blacklisted then a pretty generic gadge
 
 See [unzipper from HXP CTF 2021](https://github.com/cscosu/ctf-writeups/tree/master/2021/hxp_ctf/unzipper) for a challenge that involves abuses symlinks and `file://` protocol ambiguities from PHP. The gist of the solution is that PHP's [`realpath`](https://www.php.net/manual/en/function.realpath.php) will resolve `file:///var/www/html/data/leak.lnk` to `file:/var/www/html/data/leak.lnk`.
 
+### NGINX/LFI Code Execution
+
+A generic NGINX + PHP LFI code execution can be found in [0xbb's blog post](https://bierbaumer.net/security/php-lfi-with-nginx-assistance/).
+
 ## JavaScript
 
 Note that many of these techniques are applicable to both client-side and server-side JavaScript runtimes.
