@@ -46,9 +46,6 @@ Get-LocalUser | Select-Object SID
 whoami /user
 wmic useraccount where name='%username%' get sid
 
-# Get SID by local username.
-wmic useraccount where name='<USERNAME>' get sid
-
 # Get SID by domain username.
 wmic useraccount where (name='<USERNAME>' and domain='<DOMAIN>') get sid
 
@@ -233,27 +230,28 @@ TODO: comprehensive list of scans with pros/cons
 
 ```sh
 export DUMP=./memory.vmem
+export PROFILE=Win7SP0x64
 
 # Get basic info for a dump, including recommended profiles.
 volatility -f $DUMP imageinfo
 
 # View processes; see also pslist and psscan.
-volatility -f $DUMP --profile=Win7SP0x64 pstree
+volatility -f $DUMP --profile=$PROFILE pstree
 
 # Dump the memory of a specific process.
-volatility -f $DUMP --profile=Win7SP0x64 memdump -p <PID> -D dump/
+volatility -f $DUMP --profile=$PROFILE memdump -p <PID> -D dump/
 
 # View commands run in the command prompt.
-volatility -f $DUMP --profile=Win7SP0x64 connections
+volatility -f $DUMP --profile=$PROFILE connections
 
 # View network connections; use `consoles` to also get command prompt output.
-volatility -f $DUMP --profile=Win7SP0x64 cmdscan
+volatility -f $DUMP --profile=$PROFILE cmdscan
 
 # View environment variables.
-volatility -f $DUMP --profile=Win7SP0x64 envars
+volatility -f $DUMP --profile=$PROFILE envars
 
 # View internet explorer history.
-volatility -f $DUMP --profile=Win7SP0x64 iehistory
+volatility -f $DUMP --profile=$PROFILE iehistory
 ```
 
 The best practical applications of Volatility I've seen come from [Andrea Fortuna's website](https://www.andreafortuna.org/). [Here](https://www.andreafortuna.org/2018/03/02/volatility-tips-extract-text-typed-in-a-notepad-window-from-a-windows-memory-dump/) is an example of extracting strings written within a notepad process.
@@ -280,7 +278,13 @@ TODO
 
 The best research I've seen on Keybase encrypted chat forensics can be found [here](https://hatsoffsecurity.com/2020/02/23/keybase-io-forensics-investigation/).
 
-## Git Repositories
+### Signal
+
+The [`signal_for_android_decryption`](https://github.com/mossblaser/signal_for_android_decryption) tool can be used for parsing and decrypting the contents of Signal backups on Android devices. [This accompanying article](http://jhnet.co.uk/articles/signal_backups) explains the layout of these backup archives well.
+
+For a challenge that involves use of the previously-mentioned tool and applies an IV-reuse attack, see [caBalS puking](https://ctftime.org/writeup/31880) from HXP CTF 2021.
+
+### Git Repositories
 
 Looking at the changes that occured between `HEAD` and specific hash:
 
