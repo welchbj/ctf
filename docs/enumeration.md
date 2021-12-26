@@ -280,6 +280,19 @@ TODO: %TEMP% folders for all users
 (Get-ChildItem -Recurse -Path \Windows\Temp).fullname | Where-Object { !$_PSIsContainer }
 ```
 
+#### PowerShell Execution Artifacts
+
+Passwords or other useful information may be left behind in [PowerShell history files](https://0xdf.gitlab.io/2018/11/08/powershell-history-file.html). These can be examined in the following ways:
+
+```powershell
+# Find history files (in default locations) for all users.
+(Get-ChildItem -Path \Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\*).fullname
+
+# Find the PowerShell history file save path (useful for looking for non-default locations).
+(Get-PSReadLineOption).HistorySavePath
+type (Get-PSReadLineOption).HistorySavePath
+```
+
 ### Active Directory Enumeration
 
 Some nice overview resources include:
