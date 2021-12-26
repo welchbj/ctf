@@ -102,3 +102,19 @@ ftp.quit()
 ```
 
 You might want to turn this script into a one-line shell command. If so, check out [my one-liner-izing script](../scripts/encoding/any-python-one-liner-ize.py).
+
+## Windows File Exfiltration Techniques
+
+### Living Off of the Land
+
+For a list of LOL Windows download techniques, see [LOLBAS/download](https://lolbas-project.github.io/#/download).
+
+### PowerShell
+
+[`Start-BitsTransfer`](https://ss64.com/ps/start-bitstransfer.html):
+
+```powershell
+# Module may need to be imported before use.
+Import-Module BitsTransfer
+Start-BitsTransfer -Source $src -Destination $dst
+```
