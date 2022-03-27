@@ -124,4 +124,12 @@ Now, right clicking on our query file and selecting "CodeQL: Run Query" will pro
 
 ## Manual Inspection and Exploitation
 
-TODO
+Unfortunately, none of our automated methods were able to find a usable vulnerability. Relying on manual code review, we can observe a lack of directory traversal checks in the `openat` syscall implementation. From here, we can traverse up to `procfs`, defeat ASLR by reading `/proc/self/maps`, and gain process control by writing shellcode to `/proc/self/mem`.
+
+This is implemented in [`solve.py`](./solve.py) and [`payload.c`](./payload.c).
+
+## References
+
+* [Epic Leet Team writeup](https://ctftime.org/writeup/32148)
+* [kalmarunionen writeup](https://ctftime.org/writeup/32134)
+* [Practical Introduction to CodeQL](https://jorgectf.github.io/blog/post/practical-codeql-introduction/#regular-expression-injection)

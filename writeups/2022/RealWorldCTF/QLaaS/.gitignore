@@ -2,3 +2,5 @@
 qiling/
 qiling-codeql-db/
 qiling-codeql-database/
+fixed_payload.c
+payload.elf

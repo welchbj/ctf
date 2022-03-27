@@ -1,3 +1,0 @@
-- qlpack: codeql/python-queries
-- include:
-  tags contains: security
