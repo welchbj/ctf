@@ -71,12 +71,56 @@ This looks like the use of the dangerous `eval` function in a syscall implementa
 Let's start by setting up CodeQL:
 
 ```sh
-TODO
+# Make a directory to store all CodeQL installation files
+mkdir -p ~/codeql-home && cd ~/codeql-home
+
+# Clone the CodeQL source repository, which includes various custom queries.
+git clone https://github.com/github/codeql.git codeql-repo
+
+# Download and extract the latest CodeQL release.
+wget https://github.com/github/codeql-cli-binaries/releases/latest/download/codeql-linux64.zip
+unzip codeql-linux64.zip && rm codeql-linux64.zip
+
+# Add the CodeQL bin path to your PATH. This needs to be persisted into a file
+# like ~/.bashrc for long term use.
+export PATH=~/codeql-home/codeql:${PATH}
+
+# Ensure we have access to a variety of languages and qlpacks.
+codeql resolve languages
+codeql resolve qlpacks
 ```
+
+Once CodeQl is installed, we have to create a queryable CodeQL database of the CodeQL source code. We can do so with the following:
+
+```sh
+cd qiling
+codeql database create --language=python ../qiling-codeql-database
+```
+
+### Using Existing Query Suites
+
+The CodeQL development team has already created a variety of core security-related checks for different programming languages. We can run the core set of Python security checks on our database with:
+
+```sh
+codeql database analyze --format=sarif-latest --output=./results/python-securtiy.sarif.json ./qiling-codeql-database python-security-and-quality.qls
+```
+
+Then, using the [Visual Studio Code Sarif Viewer extension](https://marketplace.visualstudio.com/items?itemName=MS-SarifVSCode.sarif-viewer), we can manually inspect flagged code locations for further triage. To do so, open the command pallette (`ctrl+shift+p`) and select the TODO option. Then, open the JSON results file generated with the previous command.
+
+Unfortunately, it did not appear that these queries returned any actionable vulnerabilities.
 
 ### Writing a Query
 
-TODO
+It seems like the most obvious way of achieving code execution on the host system would be achieving a directory traversal to be able to access procfs files outside of the Qiling sandbox, like `/proc/self/mem`. Consequently, let's aim to structure a query that can identify some potentially-dangerous patterns along this line.
+
+We first create a [`queries`](./queries) directory, where we will put our actual query files and [a `qlpack.yml` configuration file](./queries/qlpack.yml).
+
+The remainder of these steps are best performed in Visual Studio Code with [its CodeQL extension](https://codeql.github.com/docs/codeql-for-visual-studio-code/), in order to provide code highlighting of identified matches. To set this up, perform the following in Visual Studio Code:
+
+* In the CodeQL view, select "Choose Database from Folder" and select our previously-created database folder.
+* Ensure this database is selected as the current/active database.
+
+Now, right clicking on our query file and selecting "CodeQL: Run Query" will provide a nice summary of all matching locations.
 
 ## Manual Inspection and Exploitation
 
