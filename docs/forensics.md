@@ -220,6 +220,28 @@ The Trail of Bits CTF guide [forensics section](https://trailofbits.github.io/ct
 
 I've found the [FTK Imager tool](https://marketing.accessdata.com/ftkimager4.2.0) to be the best at examining images of this format.
 
+### Repairing RAID Arrays
+
+When given disks from a RAID array, they can be XORed togethered to recover the damaged disks.
+
+Then, the RAID array can be repaired and re-mounted using the following steps ([reference](https://github.com/lukaszhandy/ctfs/blob/main/Cyber%20Apocalypse%202022%20Intergalactic%20Chase/forensic/Intergalactic%20Recovery/solve.txt)):
+
+```sh
+sudo losetup /dev/loop1 disk1.img
+sudo losetup /dev/loop2 disk2.img
+sudo losetup /dev/loop3 disk3.img
+
+sudo mdadm --create --assume-clean --level=5 --raid-devices=3 /dev/md0 /dev/loop1 /dev/loop2 /dev/loop3
+
+sudo mount /dev/md0 /mnt/raidarray
+```
+
+Note: don't always assume the disk numbers correspond to their order in the RAID array.
+
+A nice writeup and some scripts related to RAID recovery can be found in [this writeup](https://blog.teknogeek.io/post/tokyo-westerns-ctf-2016-deadnas/) from TokyoWesterns 2016.
+
+See [this writeup](https://ctf.rip/volgactf-2016-eva-admin/) for a challenge that combines RAID repair and decrypting a LUKS file system.
+
 ## Memory Dumps
 
 ### Volatility
