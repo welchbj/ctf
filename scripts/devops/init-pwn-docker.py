@@ -28,13 +28,9 @@ _libc_to_ubuntu_map = {
 
 
 class DockerContext(NamedTuple):
-    ubuntu_version: str
+    docker_tag: str
     binary_path: Path
     libc_path: Optional[Path]
-
-    @property
-    def ubuntu_tag(self):
-        return f"ubuntu:{self.ubuntu_version}"
 
 
 def bail(msg):
@@ -59,14 +55,15 @@ def get_parsed_args():
         action="store",
         required=False,
         help="the glibc file (from which version is derived) or the version \n"
-            "to use",
+             "to use",
     )
     parser.add_argument(
-        "-u", "--ubuntu",
+        "-t", "--docker-tag",
         action="store",
         required=False,
-        help="the version of ubuntu to use; this will override any info\n"
-             "derived from the libc version"
+        default=None,
+        help="the docker tag to use; this will override any inf derived from the \n"
+             "libc version"
     )
 
     return parser.parse_args()
@@ -92,7 +89,7 @@ def gen_dockerfile(ctx):
     def apt_get(packages):
         write(f"RUN DEBIAN_FRONTEND=noninteractive apt-get install -y {packages}", newline=False)
 
-    write(f"FROM {ctx.ubuntu_tag}")
+    write(f"FROM {ctx.docker_tag}")
     write("RUN apt-get update")
     apt_get("build-essential gdb git")
     apt_get("curl tmux vim wget")
@@ -181,12 +178,16 @@ def main():
     context.binary = str(binary_path)
     elf = context.binary
 
-    # XXX: need to derive below two items from challenge files / arguments
-    ubuntu_version = "21.04"
-    libc_path = None
+    if opts.docker_tag is not None:
+        docker_tag = opts.docker_tag
+        libc_path = None
+    else:
+        # XXX: need to derive below two items from challenge files / arguments
+        docker_tag = "ubuntu:21.04"
+        libc_path = None
 
     ctx = DockerContext(
-        ubuntu_version=ubuntu_version,
+        docker_tag=docker_tag,
         binary_path=binary_path,
         libc_path=libc_path
     )
