@@ -39,7 +39,7 @@ dict_keys(['__name__', '__doc__', '__package__', '__loader__', '__spec__', '__fi
 
 ## Solving `check_flag`
 
-### Find the Flag Length
+### Finding the Flag Length
 
 Because we can load the `chall` module and call `check_flag` ourselves, this means we can pass an arbitrary argument to the `check_flag` function. While it presumably expects a `str` or `bytes` object, we can instead make a custom class that quacks like `str` or `bytes` and use this to better understand what the `check_flag` function wants to actually check about our input.
 
@@ -69,10 +69,10 @@ Flag len: 59
 We can take the premise of our length-finding approach to hook other Python [dunder methods](https://www.pythonmorsels.com/what-are-dunder-methods/) to figure out what conditions `check_flag` attempts to verify on our input. After some experimentation with overriding various dunder methods like `__and__` with `1/0` expressions to trigger raises of `ZeroDivisionError`, I was able to determine that `check_flag`'s workflow did the following:
 
 * Access a byte at specific index
-* Bitwise and that byte (via Python's `__and__`) with an integer
+* Bitwise AND that byte (via Python's `__and__`) with an integer
 * Compare the result of that operation (via `__eq__`) with another integer
 
-By hooking `__getitem__` (for index accesses), `__and__` (for the bitwise ands), and `__eq__` (to record the target result), we can record `check_flag`'s full set of constraints and then solve for them via [`z3`].
+By hooking `__getitem__` (for index accesses), `__and__` (for the bitwise ANDs), and `__eq__` (to record the target result), we can record `check_flag`'s full set of constraints and then solve for them via [`z3`].
 
 The capturing of constraints is implemented in [`hook_check_flag_find_constraints.py`](hook_check_flag_find_constraints.py):
 
