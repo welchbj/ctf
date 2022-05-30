@@ -72,7 +72,7 @@ We can take the premise of our length-finding approach to hook other Python [dun
 * Bitwise AND that byte (via Python's `__and__`) with an integer
 * Compare the result of that operation (via `__eq__`) with another integer
 
-By hooking `__getitem__` (for index accesses), `__and__` (for the bitwise ANDs), and `__eq__` (to record the target result), we can record `check_flag`'s full set of constraints and then solve for them via [`z3`].
+By hooking `__getitem__` (for index accesses), `__and__` (for the bitwise ANDs), and `__eq__` (to record the target result), we can record `check_flag`'s full set of constraints and then solve for them via [`z3`](https://ericpony.github.io/z3py-tutorial/guide-examples.htm).
 
 The capturing of constraints is implemented in [`hook_check_flag_find_constraints.py`](hook_check_flag_find_constraints.py):
 
