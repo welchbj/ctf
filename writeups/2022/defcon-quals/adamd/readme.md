@@ -66,7 +66,7 @@ Flag len: 59
 
 ### (Almost) Finding the Flag
 
-We can take the premise of this approach to hook other Python [dunder methods](https://www.pythonmorsels.com/what-are-dunder-methods/) to figure out what conditions `check_flag` attempts to verify on our input. After some experimentation with overriding various dunder methods like `__and__` with `1/0` expressions to trigger raises of `ZeroDivisionError`, I was able to determine that `check_flag`'s workflow did the following:
+We can take the premise of our length-finding approach to hook other Python [dunder methods](https://www.pythonmorsels.com/what-are-dunder-methods/) to figure out what conditions `check_flag` attempts to verify on our input. After some experimentation with overriding various dunder methods like `__and__` with `1/0` expressions to trigger raises of `ZeroDivisionError`, I was able to determine that `check_flag`'s workflow did the following:
 
 * Access a byte at specific index
 * Bitwise and that byte (via Python's `__and__`) with an integer
@@ -102,4 +102,36 @@ Unfortunately, the only sequence of bytes that satisfies `check_flag` isn't the 
 
 So, we know what input we want to pass to `check_flag` that passes the constraints and gives us a win message. If we also choose to assume that the input to the program as a whole is simply the flag string itself (without any encoding applied), then the only thing that can be happening is some transformation of our flag input between when we provide it to `main` and when it gets passed as an argument to `check_flag`.
 
-TODO
+To better understand this, let's hook `check_flag` itself to see what `main` ends up passing it. We also hook `__builtins__.input` so we can programmatically pass our input to `main` rather than having it read from `stdin`.
+
+```sh
+$ ./bin/python
+>>> __builtins__.input = lambda x: "FLAG{" + "A"*53 + "}"
+>>> import chall
+>>> chall.check_flag = lambda x: print("check_flag called with:", x) 
+>>> chall.main()
+check_flag called with: b'\x8e\x86\x8d\x95\xbb\x93\x95\x97\x99\x9b\x9d\x9f\xa1\xa3\xa5\xa7\xa9\xab\xad\xaf\xb1\xb3\xb5\xb7\xb9\xbb\xbd\xbf\xc1\xc3\xc5\xc7\xc9\xcb\xcd\xcf\xd1\xd3\xd5\xd7\xd9\xdb\xdd\xdf\xe1\xe3\xe5\xe7\xe9\xeb\xed\xef\xf1\xf3\xf5\xf7\xf9\xfb)'
+Wrong flag :(
+I'm going to mine some nautilus flag tokens on your GPU!
+```
+
+This confirms our suspicion that `main` *is* transforming our input in some way. But also observe how the transformed version of our input begins with the same byte sequence as the correct `check_flag` argument we solved for earlier. This implies that `main`'s transformation occurs byte-by-byte (i.e., the bytes after the position-being-transformed don't affect the transformation). Does this mean we can just bruteforce the flag byte-by-byte until `check_flag` is called with an argument that matches the byte sequence we solved for with Z3? Yes, yes it does.
+
+Due to the fact that we want to automate this bruteforce using a normal CPython interpreter (to use things like `process` from `pwntools`), we create a simple guesser program ([`hook_guess.py`](hook_guess.py)) meant to be invoked with the modified CPython binary by the driver bruteforcer ([`brute.py`](brute.py)). This produces the flag relatively quickly:
+
+```sh
+$ python3 brute.py
+FLAG{h                                            
+FLAG{he                                           
+FLAG{hel                                          
+FLAG{help                                         
+FLAG{helpi                                        
+FLAG{helpin                                       
+FLAG{helping                                      
+FLAG{helping_                                     
+FLAG{helping_a                                    
+FLAG{helping_ad                                   
+FLAG{helping_ada                                  
+FLAG{helping_adam
+... and so on ...
+```
