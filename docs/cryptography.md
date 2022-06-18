@@ -55,6 +55,8 @@ For a more CTF-oriented look at the basics, try [this link](https://bitsdeep.com
 
 Factoring the public modulus can lead to quick wins in CTFs. Being able to factor numbers is something that can come up in a variety of other crypto problems, too. Here are some ways to do it.
 
+Note that the point of RSA is the fact that factoring large numbers is computationally difficult, especially when the number is made of 2 very large primes.
+
 #### SageMath
 
 The [SageMath](https://www.sagemath.org/) toolkit has a lot of awesome tools. Here's how to factor a number with it:
