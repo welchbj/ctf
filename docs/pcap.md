@@ -97,7 +97,7 @@ not arp and not http and not (udp.port == 53)
 Alternatively, if you want to keep the http traffic around, you can try (note that this will also exclude DNS over TCP, which you probably want to look at):
 
 ```
-!(apr or icmp or dns or stp)
+!(arp or icmp or dns or stp)
 ```
 
 However, don't discount these classes of traffic just because they align with typical computer usage. DNS, HTTP, and even ARP can easily be an integral part of a PCAP analysis challenge.
