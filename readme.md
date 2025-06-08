@@ -4,4 +4,4 @@ This repository contains scripts and documentation files that include useful res
 
 ## License
 
-All content in this repository is licensed under the [MIT License](https://opensource.org/licenses/MIT), as per the [`license.txt`](./license.txt) file.
+All original content in this repository is licensed under the [MIT License](https://opensource.org/licenses/MIT), as per the [`license.txt`](./license.txt) file.
